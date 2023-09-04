@@ -1,0 +1,28 @@
+/* default */
+{
+    "days_voted":[]
+}
+ 
+/* demonstration */
+{
+    "days_voted":[
+        {
+            "date":"2023-08-31",
+            "menu_voted":[
+                {"name":"잡곡밥","meal":"breakfast","affinity":"good"},
+                {"name":"미역국","meal":"breakfast","affinity":"good"},
+                {"name":"쇠고기숙주볶음","meal":"breakfast","affinity":"good"},
+                {"name":"수제새우살전","meal":"breakfast","affinity":"good"}
+            ]
+        } , 
+        {
+            "date":"2023-09-01",
+            "menu_voted":[
+                {"name":"잡곡밥","meal":"breakfast","affinity":"good"},
+                {"name":"잡곡밥","meal":"breakfast","affinity":"good"},
+                {"name":"잡곡밥","meal":"breakfast","affinity":"good"},
+                {"name":"잡곡밥","meal":"breakfast","affinity":"good"}
+            ]
+        }
+    ]
+}

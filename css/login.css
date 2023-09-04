@@ -1,0 +1,42 @@
+html {
+    font-family: 'Courier New', Courier, monospace;
+    background-color: #FFFFFF;
+}
+
+body {
+    margin: 0;
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+}
+
+#text_select {
+    display: flex;
+    justify-content: right;
+}
+
+#text_select .right {
+    display: flex;
+    flex-direction:row;
+    align-items: center;
+}
+
+#login .text {
+    display: inline-block;
+    /* border: 3px solid black; */
+}
+
+#login .input {
+    padding: 4px;
+    margin: 3px;
+}
+
+#login .button {
+    padding: 4px;
+    margin: 6px auto;
+    width: 98%;
+
+    display: flex;
+    justify-content: center;
+}
