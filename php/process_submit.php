@@ -40,15 +40,27 @@ function add_affinity($json_entire , $affinities , $day) {
     return $json_entire;
 }
 
-function increment_vote($date , $menu_name , $db_name , $vote_option , $vote_inc) {
+function increment_vote($date , $table_name , $menu_name , $vote_option , $vote_inc) {
     $connect = connect_server();
-    $sql_req = "SELECT total_vote,good_vote,middle_vote,bad_vote FROM ".$db_name." WHERE name=\"".$menu_name."\" AND date=\"".$date."\";";
+    $sql_req = "SELECT total_vote,good_vote,middle_vote,bad_vote FROM ".$table_name." WHERE name=\"".$menu_name."\" AND date=\"".$date."\";";
     $result = mysqli_query($connect , $sql_req);
     if($result == null) {
         return;
     }
     $data = mysqli_fetch_assoc($result);
-    $data[$vote_option] += $vote_enc;
-    $sql_req = "UPDATE "
+    echo "<br>";
+    var_dump($data);
+    $data[$vote_option] = ((int)$data[$vote_option])+$vote_inc;
+    echo $data[$vote_option];
+    $sql_req = "UPDATE ".$table_name." SET ".$vote_option."=".$data[$vote_option]." WHERE name=\"".$menu_name."\" AND date=\"".$date."\";";
+    echo "<br>";
+    echo $sql_req;
+    mysqli_close($connect);
+
+    $connect = connect_server();
+    mysqli_query($connect , $sql_req);
+    mysqli_close($connect);
+    return;
 }
+
 ?>
