@@ -60,9 +60,13 @@ foreach(["breakfast" , "lunch" , "dinner"] as $meal) {
 // var_dump($menu_voted);
 
 if($day_info == null) {
-    // add date
+    // add date, this is a new date
     $json_entire['days_voted'][] = ['date'=>$_POST['requested_day'] , 'menu_voted'=>$menu_voted];
-    
+    foreach($menu_voted as $one_voted_menu) {
+        increment_vote($_POST['requested_day'] , "menu_list_".$one_voted_menu['meal'] , $one_voted_menu['name'] , "total_vote" , 1);
+        increment_vote($_POST['requested_day'] , "menu_list_".$one_voted_menu['meal'] , $one_voted_menu['name'] , $one_voted_menu['affinity']."_vote" , 1);
+    }
+    exit();
 }
 else {
     // it's being modified
@@ -76,7 +80,7 @@ else {
     echo "<br>";
     $json_entire['days_voted'][$i]['menu_voted'] = $menu_voted;
 }
-
+/*
 $json_updated = json_encode($json_entire , JSON_UNESCAPED_UNICODE);
 echo $json_updated;
 // Update database(change json data)
@@ -88,4 +92,5 @@ mysqli_close($connect);
 echo "<script>
 location.href = \"index.php?day_selector=".$_POST['requested_day']."\";
 </script>";
+*/
 ?>
