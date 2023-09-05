@@ -44,7 +44,16 @@ function get_affinity_list() {
                 }
                 print_special_menu();
                 
-                if(isset($_SESSION['username'])) {
+                if(isset($_SESSION['username']) && $_SESSION['account_type'] == "user") {
+                    $total_menu_count = 0;
+                    $total_voted_count = 0;
+                    for($i = -6; $i <= 0; $i++) {
+                        $date_value = date("Y-m-d" , strtotime("+".$i." day"));
+                        
+                        $total_menu_count += get_menu_count($date_value);
+                        $total_voted_count += count(get_affinities_from_db($date_value));
+                    }
+
                     if(!isset($_GET['day_selector'])) {
                         $date_value = date("Y-m-d" , strtotime("0 day"));
                     }
@@ -56,49 +65,57 @@ function get_affinity_list() {
                     $voted_count = count($affinities);
                     // show the percentage of survey
                     $percentage = (($voted_count/$menu_count)*100);
-                ?>
-                <div style="display: flex; justify-content: space-between;">
-                    <span>설문 진행도</span>
-                    <span><?php echo $voted_count."/".$menu_count; ?></span>
-                </div>
-                <br>
-                <div>
-                    <div id="prog_bar_body" class="progressbar_outer">
-                        <?php
-                        $style = "width: ".$percentage."%;";
-                        $div_tag = "<div id=\"prog_bar\" class=\"progressbar_inner\">0%";
-
-                        echo $div_tag;
-
-                        ?>
-                        </div>
+                    $total_percentage = (($total_voted_count/$total_menu_count)*100);
+                    echo '
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>하루 설문 진행도</span>
+                        <span><?php echo $voted_count."/".$menu_count; ?></span>
                     </div>
-                </div>
-                <?php
+                    
+                    <div id="prog_bar_body_1" class="progressbar_outer">
+                        <div id="prog_bar_1" class="progressbar_inner">0%</div>
+                    </div>
+                    <br>
+                    
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>전체 설문 진행도</span>
+                        <span><?php echo $voted_count."/".$menu_count; ?></span>    
+                    </div>
+                    
+                    <div id="prog_bar_body_2" class="progressbar_outer">
+                        <div id="prog_bar_2" class="progressbar_inner">0%</div>
+                    </div>
+                    ';
                 }
                 ?>
             </div>
         </div>
-        <?php echo "<script>var percentage = ".$percentage."</script>"; ?>
+        <?php echo "<script>var percentage_local = ".$percentage."</script>"; ?>
+        <?php echo "<script>var percentage_total = ".$total_percentage."</script>"; ?>
         <script>
             function start_progressbar() {
-                var prog_bar = document.getElementById("prog_bar");
-                prog_bar.style.width = "0%";
-                var id = setInterval(move_progbar , 5);
-                var width = 0;
-                var vel = 1.6;
-                var acc = -0.001;
-                function move_progbar() {
-                    if(width >= percentage) {
+                var prog_bars = document.getElementsByClassName("progressbar_inner");
+                let id_list = [];
+                let width = [0 , 0];
+                let vel = [1.6 , 1.6];
+                let acc = [-0.001 , -0.001];
+                let percentages = [percentage_local , percentage_total];
+                for(var i = 0; i < prog_bars.length; i++) {
+                    prog_bars.item(i).style.width = "0%";
+                    var id = setInterval(move_progbar, 5 , prog_bars.item(i) , i , percentages[i]);
+                    id_list = id_list.push(id);
+                }
+                function move_progbar(prog_bar , i , percentage) {
+                    if(width[i] >= percentage) {
                         prog_bar.style.width = Math.trunc(percentage)+"%";
                         prog_bar.innerHTML = Math.trunc(percentage)+"%";
-                        clearInterval(id);
+                        clearInterval(id_list[i]);
                     }
                     else {
-                        prog_bar.style.width = Math.trunc(width)+"%";
-                        prog_bar.innerHTML = Math.trunc(width)+"%";
-                        width += vel;
-                        vel += acc;
+                        prog_bar.style.width = Math.trunc(width[i])+"%";
+                        prog_bar.innerHTML = Math.trunc(width[i])+"%";
+                        width[i] += vel[i];
+                        vel[i] += acc[i];
                     }
                 }
             }
@@ -119,7 +136,7 @@ function get_affinity_list() {
                 $week = date("w" , strtotime("+".$i." day"));
                 $date_value = date("Y-m-d" , strtotime("+".$i." day"));
                 $did = "";
-                if(isset($_SESSION['username'])) {
+                if(isset($_SESSION['username']) && $_SESSION['account_type'] == "user") {
                     $affinities = get_affinities_from_db($date_value);
                     $menu_count = get_menu_count($date_value);
                     // Compare the number of submission and total menus
@@ -173,7 +190,7 @@ function get_affinity_list() {
                 ?>
             </div>
             <?php
-            if($_SESSION['username'] != "") {
+            if(isset($_SESSION['username']) && $_SESSION['account_type'] == "user") {
                 echo "<div id=\"submit_final\"><button class=\"button\" type=\"submit\">설문 보내기</button></div>";
             }
             ?>

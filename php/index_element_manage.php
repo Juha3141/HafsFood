@@ -94,7 +94,7 @@ function print_menus($table_name , $meal_name , $requested_day , $affinity_list)
     for($i = 0; $i < count($valid_results); $i++) {
         $row = $valid_results[$i];
         echo "<div class=\"menu_selector\"><br><p class=\"menu_name\">".$row['name']."</p>";
-        if($_SESSION['username'] != "") {
+        if(isset($_SESSION['username']) && $_SESSION['account_type'] == "user") {
             $initial_value = "";
             foreach($meal_affinities as $info) {
                 if($info['name'] == $row['name']) {

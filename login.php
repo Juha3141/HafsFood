@@ -44,13 +44,14 @@ include('./php/process_login.php');
             if($result == 0) {
                 $_POST['password'] = "";
                 session_start();
-                $_SESSION['username'] = $_POST['user'];    
-                $_SESSION['account_type'] = $_POST['login_type'];
+                $_SESSION['username'] = $_POST['user'];
                 // where to go?
                 if($_POST['login_type'] == "user_list") {
+                    $_SESSION['account_type'] = "user";
                     echo "<script>location.href = \"./index.php\"</script>";
                 }
                 else if($_POST['login_type'] == "admin_list") {
+                    $_SESSION['account_type'] = "admin";
                     echo "<script>location.href = \"./admin.php\"</script>"; // admin page
                 }
             }
