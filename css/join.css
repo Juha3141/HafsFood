@@ -11,39 +11,40 @@ body {
     align-items: center;
 }
 
-#text_select {
-    display: flex;
-    justify-content: right;
+#main_div {
+    width: 40%;
 }
 
-#text_select .right {
-    display: flex;
-    flex-direction:row;
-    align-items: center;
-}
-
-#login {
+#join {
+    /* border: 3px solid black; */
     display: flex;
     flex-direction: column;
+
     float: center;
 }
 
-#login .label {
+#join .label {
     color: #444444;
     font-size: 13px;
     margin: 3px;
 }
 
-#login .input {
+#join .input {
     padding: 4px;
     margin: 3px;
 }
 
-#login .button {
+#join .button {
     padding: 4px;
     margin: 6px auto;
     width: 98%;
 
     display: flex;
     justify-content: center;
+    background-color: #E4E7EB;
+}
+
+
+#check_id {
+    
 }

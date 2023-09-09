@@ -34,6 +34,7 @@ function print_survey($menu_name , $meal_name , $initial_value) {
 }
 
 function get_menu_count($date) {
+    $date = block_sql_injection($date);
     $menu_tables = ["menu_list_breakfast" , "menu_list_lunch" , "menu_list_dinner"];
     $connect = connect_server();
 

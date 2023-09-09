@@ -1,0 +1,10 @@
+.navbar {
+    background-color: #D9E5FF;
+    overflow: hidden;
+}
+
+.navbar .txt_content {
+    display: inline-block;
+    text-align: center;
+    padding: 10px;
+}

@@ -1,0 +1,30 @@
+#user_info_dialog {
+    /* border: 3px solid black; */
+    display: flex;
+    flex-direction: column;
+
+    float: center;
+}
+
+#user_info_dialog .label {
+    color: #444444;
+    font-size: 13px;
+    margin: 3px;
+}
+
+#user_info_dialog .input {
+    padding: 4px;
+    margin: 3px;
+}
+
+#user_info_dialog .button {
+    padding: 8px;
+    margin: 6px auto;
+    width: 98%;
+    font-weight: bold;
+    border: 0;
+    border-radius: 1em;
+
+    display: flex;
+    justify-content: center;
+}
