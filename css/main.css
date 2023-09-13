@@ -15,21 +15,6 @@ html {
     font-size: 40px;
 }
 
-.progressbar_outer {
-    background-color: #DDDDDD;
-    border-radius:15px;
-    text-align: center;
-    display: flex;
-}
-
-.progressbar_inner {
-    background-color: #5a8dcf;
-    padding: 10px;
-    border-radius: 15px;
-    text-align: center;
-    transition: width 400ms;
-}
-
 #special_main {
     font-size: 25px;
     padding: 20px;

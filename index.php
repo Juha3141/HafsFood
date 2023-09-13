@@ -11,7 +11,7 @@ function get_affinity_list() {
     if(!isset($_SESSION['username'])) {
         return null;
     }
-    for($i = -6; $i <= 0; $i++) {
+    for($i = 0; $i < 7; $i++) {
         $day = date("d" , strtotime("+".$i." day"));
         $week = date("w" , strtotime("+".$i." day"));
         
@@ -30,7 +30,9 @@ function get_affinity_list() {
     <head>
         <title>HAFS 급식 선호도 조사</title>
         <link rel="stylesheet" type="text/css" href="css/main.css"></style>
+        <link rel="stylesheet" type="text/css" href="css/progbar.css"></style>
         <script src="script/index_acts.js"></script>
+        <script src="script/progbar.js"></script>
     </head>
     <body>
         <div id="top">
@@ -47,7 +49,7 @@ function get_affinity_list() {
                 if(isset($_SESSION['username']) && $_SESSION['account_type'] == "user") {
                     $total_menu_count = 0;
                     $total_voted_count = 0;
-                    for($i = -6; $i <= 0; $i++) {
+                    for($i = 0; $i < 7; $i++) {
                         $date_value = date("Y-m-d" , strtotime("+".$i." day"));
                         
                         $total_menu_count += get_menu_count($date_value);
@@ -92,46 +94,16 @@ function get_affinity_list() {
         </div>
         <?php echo "<script>var percentage_local = ".$percentage."</script>"; ?>
         <?php echo "<script>var percentage_total = ".$total_percentage."</script>"; ?>
-        <script>
-            function start_progressbar() {
-                var prog_bars = document.getElementsByClassName("progressbar_inner");
-                let id_list = [];
-                let width = [0 , 0];
-                let vel = [1.6 , 1.6];
-                let acc = [-0.001 , -0.001];
-                let percentages = [percentage_local , percentage_total];
-                for(var i = 0; i < prog_bars.length; i++) {
-                    prog_bars.item(i).style.width = "0%";
-                    var id = setInterval(move_progbar, 5 , prog_bars.item(i) , i , percentages[i]);
-                    id_list = id_list.push(id);
-                }
-                function move_progbar(prog_bar , i , percentage) {
-                    if(width[i] >= percentage) {
-                        prog_bar.style.width = Math.trunc(percentage)+"%";
-                        prog_bar.innerHTML = Math.trunc(percentage)+"%";
-                        clearInterval(id_list[i]);
-                    }
-                    else {
-                        prog_bar.style.width = Math.trunc(width[i])+"%";
-                        prog_bar.innerHTML = Math.trunc(width[i])+"%";
-                        width[i] += vel[i];
-                        vel[i] += acc[i];
-                    }
-                }
-            }
-            start_progressbar();
-        </script>
+        <script> start_progressbar("progressbar_inner" , [percentage_local , percentage_total]); </script>
+        <script> update_date(); </script>
         <br>
-        <script>
-            update_date();
-        </script>
 
         <form method="GET" action="./index.php">
             <div id="days_count">
             <?php
             $week_list = ["일","월","화","수","목","금","토"];
             // Print the day selector
-            for($i = -6; $i <= 0; $i++) {
+            for($i = 0; $i < 7; $i++) {
                 $day = date("d" , strtotime("+".$i." day"));
                 $week = date("w" , strtotime("+".$i." day"));
                 $date_value = date("Y-m-d" , strtotime("+".$i." day"));
