@@ -5,9 +5,17 @@
     $good_vote = get_total_vote("good_vote");
     $middle_vote = get_total_vote("middle_vote");
     $bad_vote = get_total_vote("bad_vote");
-    $good_p = $good_vote/$total_vote*100;
-    $middle_p = $middle_vote/$total_vote*100;
-    $bad_p = $bad_vote/$total_vote*100;
+    if($total_vote == 0) {
+        $good_p = 0;
+        $middle_p = 0;
+        $bad_p = 0;
+    }
+    else {
+        $good_p = $good_vote/$total_vote*100;
+        $middle_p = $middle_vote/$total_vote*100;
+        $bad_p = $bad_vote/$total_vote*100;
+    }
+    echo "<script> var total=$total_vote; </script>";
     echo "<script> var good_p=$good_p; </script>";
     echo "<script> var mid_p=$middle_p; </script>";
     echo "<script> var bad_p=$bad_p; </script>";
@@ -20,6 +28,14 @@
 <p style="font-size: 15px;">전체 통계</p>
 
 <!-- print progress bar -->
+<?php 
+if($total_vote == 0) {
+    echo "투표한 데이터가 없습니다!";
+    ?>
+<?php
+}
+else {
+?>
 <div class="progressbar_outer">
     <div id="progbar1" class="progressbar_mid">
         <div class="progressbar_inner_left" style="background-color:#8AA8CE;width:<?php echo $good_p ?>%;">
@@ -33,6 +49,9 @@
         </div>
     </div>
 </div>
+<?php
+}
+?>
 
 <?php echo '<p style="font-size:10px;margin:0;padding:0px;">투표수:총 '.$total_vote.'회,좋음:'.$good_vote.',보통:'.$middle_vote.',싫음:'.$bad_vote.'</p>'; ?>
 <!-- just move it -->
@@ -67,9 +86,14 @@
                 echo '<p style="font-size:20px;margin:0;padding:5px;">'.$one_menu['name'].'</p>';
                 if($one_menu['total_vote']) {
                     $total_vote = $one_menu['total_vote'];
-                    $good_p = $one_menu['good_vote']/$total_vote*100;
-                    $middle_p = $one_menu['middle_vote']/$total_vote*100;
-                    $bad_p = $one_menu['bad_vote']/$total_vote*100;
+                    if($total_vote == 0) {
+                        echo "투표한 데이터가 없습니다!";
+                    }
+                    else {
+                        $good_p = $one_menu['good_vote']/$total_vote*100;
+                        $middle_p = $one_menu['middle_vote']/$total_vote*100;
+                        $bad_p = $one_menu['bad_vote']/$total_vote*100;
+                    }
                     print_progbar_n("progbar1" , 3 , 
                     ["좋음(".round($good_p)."%)","보통(".round($middle_p)."%)","싫음(".round($bad_p)."%)"] , 
                     ["#8AA8CE","#5A8DCF","#2670CF"] , 

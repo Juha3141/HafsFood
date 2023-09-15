@@ -61,13 +61,13 @@ if($day_info == null) {
 }
 else {
     // it's being modified
-    echo "<br>data modified";
+    // echo "<br>data modified";
     for($i = 0; $i < count($json_entire['days_voted']); $i++) {
         if($json_entire['days_voted'][$i]['date'] == $_POST['requested_day']) {
             break;
         }
     }
-    echo "<br>==================<br>";
+    // echo "<br>==================<br>";
 
     // modify number of votes of menu
     user_increment_vote("total_vote" , $_SESSION['username'] , -count($json_entire['days_voted'][$i]['menu_voted']));
@@ -81,9 +81,9 @@ else {
         increment_vote($_POST['requested_day'] , "menu_list_".$one_voted_menu['meal'] , $one_voted_menu['name'] , $one_voted_menu['affinity']."_vote" , -1);
     }
     $json_entire['days_voted'][$i]['menu_voted'] = $menu_voted;
-    echo "<br>==================<br>";
-    var_dump($menu_voted);
-    echo "<br>==================<br>";
+    // echo "<br>==================<br>";
+    // var_dump($menu_voted);
+    // echo "<br>==================<br>";
 }
 
 foreach($menu_voted as $one_voted_menu) {
@@ -99,7 +99,7 @@ foreach($menu_voted as $one_voted_menu) {
 
 // apply changes
 $json_updated = json_encode($json_entire , JSON_UNESCAPED_UNICODE);
-echo $json_updated;
+// echo $json_updated;
 // Update database(change json data)
 $connect = connect_server();
 $sql_req = "UPDATE user_list SET survey_info='".$json_updated."' WHERE id='".$_SESSION['username']."';";
