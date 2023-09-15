@@ -48,14 +48,14 @@ function increment_vote($date , $table_name , $menu_name , $vote_option , $vote_
         return;
     }
     $data = mysqli_fetch_assoc($result);
-    echo "<br>";
+    // echo "<br>";
     // var_dump($data);
     $data[$vote_option] = ((int)$data[$vote_option])+$vote_inc;
-    echo $table_name.",".$menu_name.",".$vote_option.",incremenet_vote:".$data[$vote_option];
+    // echo $table_name.",".$menu_name.",".$vote_option.",incremenet_vote:".$data[$vote_option];
     $sql_req = "UPDATE ".$table_name." SET ".$vote_option."=".$data[$vote_option]." WHERE name=\"".$menu_name."\" AND date=\"".$date."\";";
-    echo "<br>";
-    echo $sql_req;
-    echo "<br>";
+    // echo "<br>";
+    // echo $sql_req;
+    // echo "<br>";
     mysqli_close($connect);
 
     $connect = connect_server();
@@ -68,14 +68,14 @@ function increment_vote($date , $table_name , $menu_name , $vote_option , $vote_
 function user_increment_vote($column_name , $user_id , $inc) {
     $connect = connect_server();
     $sql_req = "SELECT ".$column_name." FROM user_list WHERE id=\"".$user_id."\";";
-    echo $sql_req."<br>";
+    // echo $sql_req."<br>";
     $result = mysqli_query($connect , $sql_req);
     if(!$result) {
         return;
     }
     $data = mysqli_fetch_assoc($result);
     $vote_count = $data[$column_name]+$inc;
-    echo "new vote count : ".$vote_count."<br>";
+    // echo "new vote count : ".$vote_count."<br>";
     mysqli_close($connect);
 
     $sql_req = "UPDATE user_list SET ".$column_name."=".$vote_count." WHERE id=\"".$user_id."\";";

@@ -66,28 +66,39 @@ function get_affinity_list() {
                     $affinities = get_affinities_from_db($date_value);
                     $voted_count = count($affinities);
                     // show the percentage of survey
-                    $percentage = (($voted_count/$menu_count)*100);
-                    $total_percentage = (($total_voted_count/$total_menu_count)*100);
-                    echo '
-                    <div style="display: flex; justify-content: space-between;">
-                        <span>하루 설문 진행도</span>
-                        <span><?php echo $voted_count."/".$menu_count; ?></span>
-                    </div>
-                    
-                    <div id="prog_bar_body_1" class="progressbar_outer">
-                        <div id="prog_bar_1" class="progressbar_inner">0%</div>
-                    </div>
-                    <br>
-                    
-                    <div style="display: flex; justify-content: space-between;">
-                        <span>전체 설문 진행도</span>
-                        <span><?php echo $voted_count."/".$menu_count; ?></span>    
-                    </div>
-                    
-                    <div id="prog_bar_body_2" class="progressbar_outer">
-                        <div id="prog_bar_2" class="progressbar_inner">0%</div>
-                    </div>
-                    ';
+                    if($menu_count != 0) {
+                        echo '
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>하루 설문 진행도</span>
+                            <span><?php echo $voted_count."/".$menu_count; ?></span>
+                        </div>
+                        
+                        <div id="prog_bar_body_1" class="progressbar_outer">
+                            <div id="prog_bar_1" class="progressbar_inner">0%</div>
+                        </div>
+                        <br>
+                        ';
+                    }
+                    if($total_menu_count != 0) {
+                        echo '
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>전체 설문 진행도</span>
+                            <span><?php echo $voted_count."/".$menu_count; ?></span>    
+                        </div>
+                        
+                        <div id="prog_bar_body_2" class="progressbar_outer">
+                            <div id="prog_bar_2" class="progressbar_inner">0%</div>
+                        </div>
+                        ';
+                    }
+                    $percentage = 0;
+                    $total_percentage = 0;
+                    if($menu_count != 0) {
+                        $percentage = (($voted_count/$menu_count)*100);
+                    }
+                    if($total_menu_count != 0) {
+                        $total_percentage = (($total_voted_count/$total_menu_count)*100);
+                    }
                 }
                 ?>
             </div>
@@ -97,6 +108,7 @@ function get_affinity_list() {
         <script> start_progressbar("progressbar_inner" , [percentage_local , percentage_total]); </script>
         <script> update_date(); </script>
         <br>
+        
 
         <form method="GET" action="./index.php">
             <div id="days_count">
@@ -156,14 +168,18 @@ function get_affinity_list() {
                     echo "<input type=\"hidden\" name=\"requested_day\" value=\"".$requested_day."\">";
                     // print menus and the radios 
                     $affinity_list = get_affinity_list();
-                    print_menus($meal_name_n_db[0],$meal_name_n_db[2],$requested_day,$affinity_list);
+                    print_menus($meal_name_n_db[0],$meal_name_n_db[2],$requested_day,$affinity_list,$menu_count == $voted_count);
                     echo "</div>";
                 }
                 ?>
             </div>
             <?php
-            if(isset($_SESSION['username']) && $_SESSION['account_type'] == "user") {
-                echo "<div id=\"submit_final\"><button class=\"button\" type=\"submit\">설문 보내기</button></div>";
+            if(isset($_SESSION['username']) && $_SESSION['account_type'] == "user") { // later!
+                if(($menu_count != $voted_count)) {
+                    if($menu_count != 0) {
+                        echo "<div id=\"submit_final\"><button class=\"button\" type=\"submit\">설문 보내기</button></div>";
+                    }
+                }
             }
             ?>
         </form>

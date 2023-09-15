@@ -17,17 +17,21 @@ function print_my_info() {
     ";
 }
 
-function print_survey($menu_name , $meal_name , $initial_value) {
+function print_survey($menu_name , $meal_name , $initial_value , $is_unwritable) {
     echo "<div style=\"display:flex;justify-content:center;\">";
     $text = ["좋음" , "보통" , "싫음"];
     $value = ["good" , "middle" , "bad"];
     $menu_name = str_replace(' ' , '-' , $menu_name);
     for($i = 0; $i < 3; $i++) {
         $checked = "";
+        $readonly = "";
         if($value[$i] == $initial_value) {
             $checked = " checked";
         }
-        echo "<div style=\"padding:10px;display:flex;align-items:center;\"><label>".$text[$i]."</label><input class=\"radio\" name=\"affinity_".$menu_name."_".$meal_name."\" type=\"radio\" value=\"".$value[$i]."\"".$checked."/></div>";
+        if($is_unwritable) {
+            $readonly = " onclick=\"return false;\"";
+        }
+        echo "<div style=\"padding:10px;display:flex;align-items:center;\"><label>".$text[$i]."</label><input class=\"radio\" name=\"affinity_".$menu_name."_".$meal_name."\" type=\"radio\" value=\"".$value[$i]."\"".$checked."".$readonly."/></div>";
     }
     echo "</div>";
     echo "<br>";
@@ -63,7 +67,7 @@ function get_menus($table_name , $requested_day) {
     return $valid_results;
 }
 
-function print_menus($table_name , $meal_name , $requested_day , $affinity_list) {
+function print_menus($table_name , $meal_name , $requested_day , $affinity_list , $is_unwritable) {
     $today_affinities = null;
     $meal_affinities = [];
     if($affinity_list != null) { 
@@ -102,7 +106,7 @@ function print_menus($table_name , $meal_name , $requested_day , $affinity_list)
                     $initial_value = $info['affinity'];
                 }
             }
-            print_survey($i , $meal_name , $initial_value);
+            print_survey($i , $meal_name , $initial_value , $is_unwritable);
         }
         else {
             echo "<br>";
