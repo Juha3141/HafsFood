@@ -81,4 +81,20 @@ function get_special_menu($month , $year) {
     return $menuname;
 }
 
+function get_voted_count_day($year,$month,$date) {
+    $connect = connect_server();
+    $total_vote = 0;
+    $table_name = ["breakfast" , "lunch" , "dinner"];
+    foreach($table_name as $table) {
+        $sql_req = "SELECT SUM(total_vote) FROM menu_list_$table WHERE date=\"$year-$month-$date\";";
+        $result = mysqli_query($connect , $sql_req);
+        if(!$result) continue;
+        $row = mysqli_fetch_assoc($result);
+        $total_vote += $row['SUM(total_vote)'];
+    }
+
+    mysqli_close($connect);
+    return $total_vote;
+}
+
 ?>

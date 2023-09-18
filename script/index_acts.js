@@ -3,7 +3,7 @@ function update_date() {
     years = date.getFullYear();
     month = date.getMonth()+1;
     day = date.getDate();
-    document.getElementById("today_show").innerHTML = month+"."+" "+day+". 오늘";
+    document.getElementById("today_show").innerHTML = years+". "+month+". "+day+".";
     setTimeout(update_date , 1000);
 }
 

@@ -11,9 +11,11 @@ function print_login_button() {
 }
 
 function print_my_info() {
+    $href = ($_SESSION['account_type'] == "admin") ? "admin.php" : "mypage.php";
+    $name = ($_SESSION['account_type'] == "admin") ? "관리자 페이지" : $_SESSION['username'];
     echo "
     <a href=\"logout.php\" id=\"logout_btn\" class=\"href\">로그아웃</a>
-    <a href=\"mypage.php\" id=\"info_btn\" class=\"href\">".$_SESSION['username']."</a>
+    <a href=\"$href\" id=\"info_btn\" class=\"href\">".$_SESSION['username']."</a>
     ";
 }
 

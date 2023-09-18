@@ -31,30 +31,37 @@
 <?php 
 if($total_vote == 0) {
     echo "투표한 데이터가 없습니다!";
-    ?>
-<?php
 }
 else {
-?>
-<div class="progressbar_outer">
-    <div id="progbar1" class="progressbar_mid">
-        <div class="progressbar_inner_left" style="background-color:#8AA8CE;width:<?php echo $good_p ?>%;">
-            좋음(<?php echo round($good_p) ?>%)
-        </div>
-        <div class="progressbar_inner_mid" style="background-color:#5A8DCF;width:<?php echo $middle_p ?>%;">
-            보통(<?php echo round($middle_p) ?>%)
-        </div>
-        <div class="progressbar_inner_right" style="background-color:#2670CF;width:<?php echo $bad_p ?>%;">
-            싫음(<?php echo (int)$bad_p ?>%)
-        </div>
-    </div>
-</div>
-<?php
+    print_progbar_n("progbar1" , "3" , ["좋음(".round($good_p)."%)" , "보통(".round($middle_p)."%)" , "싫음(".round($bad_p)."%)"] , ["#8AA8CE","#5A8DCF","#2670CF"] , [$good_p , $middle_p , $bad_p]);
 }
 ?>
 
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+
 <?php echo '<p style="font-size:10px;margin:0;padding:0px;">투표수:총 '.$total_vote.'회,좋음:'.$good_vote.',보통:'.$middle_vote.',싫음:'.$bad_vote.'</p>'; ?>
 <!-- just move it -->
+<br>
+<div id="graph-container-stat" style="width:100%;height:10%;border-radius:5px"></div>
+
+<script>
+    Highcharts.chart('graph-container-stat', {
+        title:{ text:'이번달 날짜당 투표율' },
+        xAxis:{ title:{ text:'날짜' } },
+        yAxis:{ title:{ text:'투표수' } },
+        legend:{ layout:'vertical',align:'right',verticalAlign:'middle' },
+        series:[{ name:'투표수',data:[<?php
+    $day_count = [0,31,28,31,30,31,30,31,31,30,31,30,31];
+    $cur_day_count = $day_count[(int)date("m")];
+    for($d=1;$d<=$cur_day_count+1;$d++) {
+        echo get_voted_count_day(date("Y"),date("m"),$d);
+        if($d!=$cur_day_count) echo ",";
+    }?>]}]});
+</script>
+
 <form method="GET" action="admin.php#statistics">
     <div style="display:flex;flex-direction:row;align-items:center;">
         <label for="stat_date">

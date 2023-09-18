@@ -35,6 +35,7 @@ function get_affinity_list() {
         <script src="script/progbar.js"></script>
     </head>
     <body>
+        <img src="img/logo.png" style="width:150px;position:absolute;top:0px;left:0px;">
         <div id="top">
             <div id="today_show" style="float: center;"></div>
                 <?php

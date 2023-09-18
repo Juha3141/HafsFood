@@ -12,6 +12,7 @@ include('./php/process_login.php');
         <script src="script/login_acts.js"></script>
     </head>
     <body>
+        <img src="img/logo.png" style="width:150px;position:absolute;top:0px;left:0px;">
         <div id="user_info_dialog_div" style="width:20%;">
             <h3 style="text-align: center">로그인</h3>
             <form name="login_form" method="POST">
