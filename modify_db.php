@@ -1,5 +1,12 @@
 <?php
 include('./php/server_communication.php');
+include_once('./php/index_element_manage.php');
+include_once('./php/process_submit.php');
+
+function die_return() {
+    echo '<script>alert("error : what the fuck");</script>';
+    echo '<script>history.back();</script>';
+}
 
 function do_modify() {
     $new_value = urldecode(base64_decode($_GET['val'] , false));
@@ -12,16 +19,88 @@ function do_modify() {
         exit();
     }
 
+    // modify user data
+    $connect = connect_server();
+    $sql_req = "SELECT id FROM user_list";
+    $result = mysqli_query($connect , $sql_req);
+    if(!$result) {
+        die_return();
+    }
+    $id_list = [];
+    while($row = mysqli_fetch_assoc($result)) {
+        $id_list[] = $row['id'];
+    }
+    foreach($id_list as $id) { // for each name remove the menu, and insert json again
+        $user_data = get_user_data($id);
+        $new_json = json_modify_menu($user_data['survey_info'] , $_GET['meal'] , $_GET['date'] , $order , $new_value);
+        if($new_json == "") {
+            continue;
+        }
+        $sql_req = "UPDATE user_list SET survey_info='$new_json' WHERE id=\"$id\";";
+        if(!mysqli_query($connect , $sql_req)) {
+            mysqli_close($connect);
+            die_return();
+        }
+    }
+    mysqli_close($connect);
+
+    // modify from menu table
     $connect = connect_server();
     $sql_req = "UPDATE menu_list_".$_GET['meal']." SET name=\"".$new_value."\" WHERE date=\"".$_GET['date']."\" AND name=\"".$order."\";";
     $result = mysqli_query($connect , $sql_req);
     mysqli_close($connect);
     if(!$result) {
-        echo '<script>alert("error : what the fuck");</script>';
-        echo '<script>history.back();</script>';
+        die_return();
     }
+
     echo '<script>alert("변경되었습니다!");</script>';
     echo '<script>history.back();</script>';
+}
+
+function json_remove_menu($json_string , $meal , $date , $name) {
+    $json_entire = json_decode($json_string , true);
+    $menu_voted = [];
+    $d_index = 0;
+    for($d = 0; $d < count($json_entire['days_voted']); $d++) {
+        if($json_entire['days_voted'][$d]['date'] == $date) {
+            $menu_voted = $json_entire['days_voted'][$d]['menu_voted'];
+            $d_index = $d;
+            break;
+        }
+    }
+    if($menu_voted == []) {
+        return "";
+    }
+    for($i = 0; $i < count($menu_voted); $i++) {
+        if($menu_voted[$i]['meal'] == $meal && $menu_voted[$i]['name'] == $name) {
+            array_splice($json_entire['days_voted'][$d_index]['menu_voted'] , $i , 1);
+        }
+    }
+    $json_updated = json_encode($json_entire , JSON_UNESCAPED_UNICODE);
+    return $json_updated;
+}
+
+function json_modify_menu($json_string , $meal , $date , $name , $new_name) {
+    $json_entire = json_decode($json_string , true);
+    $menu_voted = [];
+    $d_index = 0;
+    for($d = 0; $d < count($json_entire['days_voted']); $d++) {
+        if($json_entire['days_voted'][$d]['date'] == $date) {
+            $menu_voted = $json_entire['days_voted'][$d]['menu_voted'];
+            $d_index = $d;
+            break;
+        }
+    }
+    if($menu_voted == []) {
+        return "";
+    }
+    for($i = 0; $i < count($menu_voted); $i++) {
+        if($menu_voted[$i]['meal'] == $meal && $menu_voted[$i]['name'] == $name) {
+            $json_entire['days_voted'][$d_index]['menu_voted'][$i]['name'] = $new_name;
+        }
+    }
+    $json_updated = json_encode($json_entire , JSON_UNESCAPED_UNICODE);
+    return $json_updated;
 }
 
 function do_remove() {
@@ -33,15 +112,56 @@ function do_remove() {
         exit();
     }
 
+
+    // remove menu from user data
+    $connect = connect_server();
+    $sql_req = "SELECT id FROM user_list";
+    $result = mysqli_query($connect , $sql_req);
+    if(!$result) {
+        die_return();
+    }
+    $id_list = [];
+    while($row = mysqli_fetch_assoc($result)) {
+        $id_list[] = $row['id'];
+    }
+    foreach($id_list as $id) { // for each name remove the menu, and insert json again
+        $user_data = get_user_data($id);
+        $json_entire = json_decode($user_data['survey_info'] , true);
+        // find the affinity
+        $affinity = "";
+        foreach($json_entire['days_voted'] as $one_day) {
+            if($one_day['date'] == $_GET['date']) {
+                foreach($one_day['menu_voted'] as $one_menu) {
+                    if($one_menu['name'] == $order && $one_menu['meal'] == $_GET['meal']) {
+                        $affinity = $one_menu['affinity'];
+                        break;
+                    }
+                }
+            }
+        }
+        $new_json = json_remove_menu($user_data['survey_info'] , $_GET['meal'] , $_GET['date'] , $order);
+        if($new_json == "") {
+            continue;
+        }
+        // ERROR
+        if($affinity != "") {
+            user_increment_vote($affinity."_vote" , $id , -1);
+            user_increment_vote("total_vote" , $id , -1);
+        }
+        $sql_req = "UPDATE user_list SET survey_info='$new_json' WHERE id=\"$id\";";
+        if(!mysqli_query($connect , $sql_req)) {
+            mysqli_close($connect);
+            die_return();
+        }
+    }
+    // remove from menu table
     $connect = connect_server();
     $sql_req = "DELETE FROM menu_list_".$_GET['meal']." WHERE date=\"".$_GET['date']."\" AND name=\"".$order."\";";
     $result = mysqli_query($connect , $sql_req);
-    mysqli_close($connect);
     if(!$result) {
-        echo '<script>alert("error : what the fuck");</script>';
-        echo '<script>history.back();</script>';
+        mysqli_close($connect);
+        die_return();
     }
-
     echo '<script>history.back();</script>';
 }
 
@@ -59,8 +179,7 @@ function do_create() {
     $result = mysqli_query($connect , $sql_req);
     mysqli_close($connect);
     if(!$result) {
-        echo '<script>alert("error : what the fuck");</script>';
-        echo '<script>history.back();</script>';
+        die_return();
     }
 
     echo '<script>alert("추가되었습니다!");</script>';

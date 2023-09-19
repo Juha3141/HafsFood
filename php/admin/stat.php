@@ -49,17 +49,24 @@ else {
 
 <script>
     Highcharts.chart('graph-container-stat', {
+        chart:{ type:'line' },
         title:{ text:'이번달 날짜당 투표율' },
-        xAxis:{ title:{ text:'날짜' } },
+        xAxis:{ title:{ text:'날짜' } , categories:[<?php
+    $day_count = [0,31,28,31,30,31,30,31,31,30,31,30,31];
+    $cur_day_count = $day_count[(int)date("m")];
+    for($d=1;$d<=$cur_day_count;$d++) {
+        echo "'$d'";
+        if($d!=$cur_day_count) echo ",";
+    }    
+        ?>]},
         yAxis:{ title:{ text:'투표수' } },
         legend:{ layout:'vertical',align:'right',verticalAlign:'middle' },
         series:[{ name:'투표수',data:[<?php
-    $day_count = [0,31,28,31,30,31,30,31,31,30,31,30,31];
-    $cur_day_count = $day_count[(int)date("m")];
-    for($d=1;$d<=$cur_day_count+1;$d++) {
+    for($d=1;$d<=$cur_day_count;$d++) {
         echo get_voted_count_day(date("Y"),date("m"),$d);
         if($d!=$cur_day_count) echo ",";
-    }?>]}]});
+    }?>]}]
+    });
 </script>
 
 <form method="GET" action="admin.php#statistics">

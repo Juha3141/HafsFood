@@ -19,7 +19,7 @@ function print_my_info() {
     ";
 }
 
-function print_survey($menu_name , $meal_name , $initial_value , $is_unwritable) {
+function print_survey($menu_name , $meal_name , $initial_value , $is_unwritable , $k) {
     echo "<div style=\"display:flex;justify-content:center;\">";
     $text = ["좋음" , "보통" , "싫음"];
     $value = ["good" , "middle" , "bad"];
@@ -33,10 +33,16 @@ function print_survey($menu_name , $meal_name , $initial_value , $is_unwritable)
         if($is_unwritable) {
             $readonly = " onclick=\"return false;\"";
         }
-        echo "<div style=\"padding:10px;display:flex;align-items:center;\"><label>".$text[$i]."</label><input class=\"radio\" name=\"affinity_".$menu_name."_".$meal_name."\" type=\"radio\" value=\"".$value[$i]."\"".$checked."".$readonly."/></div>";
+        echo "<div style=\"padding:10px;display:flex;align-items:center;\">
+            <label>".$text[$i]."</label>
+            <input id=\"radio_".$meal_name."_$k\" class=\"radio\" name=\"affinity_".$menu_name."_".$meal_name."\" type=\"radio\" value=\"".$value[$i]."\" onclick=\"handle_radios(this);\"".$checked."".$readonly."/>
+            <script>set_radio(document.getElementById(\"radio_".$meal_name."_$k\"),$initial_value);</script>
+            </div>";
+        $k++;
     }
     echo "</div>";
     echo "<br>";
+    return $k;
 }
 
 function get_menu_count($date) {
@@ -98,6 +104,7 @@ function print_menus($table_name , $meal_name , $requested_day , $affinity_list 
         echo "<div class=\"menu_selector\"><br>데이터가 없습니다!<br><br></div>";
         return;
     }
+    $k = 0;
     for($i = 0; $i < count($valid_results); $i++) {
         $row = $valid_results[$i];
         echo "<div class=\"menu_selector\"><br><p class=\"menu_name\">".$row['name']."</p>";
@@ -108,7 +115,7 @@ function print_menus($table_name , $meal_name , $requested_day , $affinity_list 
                     $initial_value = $info['affinity'];
                 }
             }
-            print_survey($i , $meal_name , $initial_value , $is_unwritable);
+            $k = print_survey($i , $meal_name , $initial_value , $is_unwritable , $k);
         }
         else {
             echo "<br>";
@@ -135,7 +142,7 @@ function print_special_menu() {
 
 function get_user_data($username) {
     $connect = connect_server();
-    $sql_req = "SELECT * FROM user_list WHERE id=\"".$_SESSION['username']."\";";
+    $sql_req = "SELECT * FROM user_list WHERE id=\"".$username."\";";
     $result = mysqli_query($connect , $sql_req);
     $data = mysqli_fetch_assoc($result);
     mysqli_close($connect);
