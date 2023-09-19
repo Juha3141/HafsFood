@@ -35,7 +35,9 @@ function get_affinity_list() {
         <script src="script/progbar.js"></script>
     </head>
     <body>
-        <img src="img/logo.png" style="width:150px;position:absolute;top:0px;left:0px;">
+        <a href="index.php">
+            <img src="img/logo.png" style="width:150px;position:absolute;top:0px;left:0px;">
+        </a>
         <div id="top">
             <div id="today_show" style="float: center;"></div>
                 <?php
@@ -140,6 +142,12 @@ function get_affinity_list() {
             }
             ?>
             </div> 
+            <?php
+            if(!isset($_SESSION['username'])) { ?>
+                <div id="not_logined">
+                    <a href="login.php" class="login_inquiry">로그인</a> 하시면 설문하실 수 있습니다.
+                </div>
+            <?php } ?>
         </form>
 
         <hr style="border: none; color: #000000; background-color: #000000; height: 5px;">
@@ -154,6 +162,23 @@ function get_affinity_list() {
             echo $week_list[$week];
             ?>
         </div>
+        <script>
+        const radio_prev_map = new Map();
+        function set_radio(radio,init) {
+            radio_prev_map.set(radio,init);
+        }
+        function handle_radios(radio) {/*
+            if(radio.value == radio_prev_map.get(radio)) {
+                radio.checked = false;
+                alert("same,"+radio_prev_map.get(radio)+"->"+radio.value);
+                radio_prev_map.set(radio , "");
+            }
+            else {
+                alert("not same,"+radio_prev_map.get(radio)+"->"+radio.value);
+                radio_prev_map.set(radio , radio.value);
+            }*/ // just forget about it
+        }
+        </script>
         <form method="POST" action="submit.php">
             <div id="days_show">
                 <?php

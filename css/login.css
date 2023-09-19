@@ -47,3 +47,13 @@ body {
     display: flex;
     justify-content: center;
 }
+
+#join_txt {
+    color: #000000;
+    font-size: 10px;
+    margin: 5px;
+}
+
+#join_txt:hover {
+    color: #444444;
+}

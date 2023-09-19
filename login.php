@@ -12,7 +12,9 @@ include('./php/process_login.php');
         <script src="script/login_acts.js"></script>
     </head>
     <body>
-        <img src="img/logo.png" style="width:150px;position:absolute;top:0px;left:0px;">
+        <a href="index.php">
+            <img src="img/logo.png" style="width:150px;position:absolute;top:0px;left:0px;">
+        </a>
         <div id="user_info_dialog_div" style="width:20%;">
             <h3 style="text-align: center">로그인</h3>
             <form name="login_form" method="POST">
@@ -27,7 +29,10 @@ include('./php/process_login.php');
                     <input name="user" class="input" type="text" placeholder="id"></input>
                     <label class="label">비밀번호</label> 
                     <input name="password" class="input" type="password" placeholder="password"></input>
-                    <p style="color: #FF0000; font-size: 10px;" id="error_msg"></p>
+                    <p style="color:#FF0000;font-size:10px;margin:5px;" id="error_msg" hidden></p>
+                    <a href="join.php" id="join_txt">
+                        회원가입
+                    </a>
                     <input type="submit" class="button" value="Login"/>
                 </div>
             </form>
@@ -37,11 +42,13 @@ include('./php/process_login.php');
                 exit();
             }
             if($_POST['user'] == "") {
-                echo "<script>document.getElementById(\"error_msg\").innerHTML = \"아이디를 입력해 주세요!\";</script>";
+                echo "<script>document.getElementById(\"error_msg\").hidden = false;
+                document.getElementById(\"error_msg\").innerHTML = \"아이디를 입력해 주세요!\";</script>";
                 exit();
             }
             if($_POST['password'] == "") {
-                echo "<script>document.getElementById(\"error_msg\").innerHTML = \"비밀번호를 입력해 주세요!\";</script>";
+                echo "<script>document.getElementById(\"error_msg\").hidden = false;
+                document.getElementById(\"error_msg\").innerHTML = \"비밀번호를 입력해 주세요!\";</script>";
                 exit();
             }
             $result = process_submit($_POST['user'],$_POST['password'],$_POST['login_type']);
@@ -60,10 +67,12 @@ include('./php/process_login.php');
                 }
             }
             else if($result == -2) { // incorrect password
-                echo "<script>document.getElementById(\"error_msg\").innerHTML = \"비밀번호가 일치하지 않습니다!\"</script>";
+                echo "<script>document.getElementById(\"error_msg\").hidden = false;
+                document.getElementById(\"error_msg\").innerHTML = \"비밀번호가 일치하지 않습니다!\"</script>";
             }
             else if($result == -1) {
-                echo "<script>document.getElementById(\"error_msg\").innerHTML = \"아이디가 존재하지 않습니다!\"</script>";
+                echo "<script>document.getElementById(\"error_msg\").hidden = false;
+                document.getElementById(\"error_msg\").innerHTML = \"아이디가 존재하지 않습니다!\"</script>";
             }
         ?>
     </body>

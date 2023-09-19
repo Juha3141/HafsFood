@@ -136,3 +136,20 @@ html {
 #submit_final .button:hover {
     background-color: #DFDFDF;
 }
+
+#login_inquiry {
+    color: #000000;
+}
+
+#not_logined {
+    text-align: center;
+}
+
+#not_logined .login_inquiry {
+    color: #000000;
+    font-weight: bold;
+}
+
+#not_logined .login_inquiry:hover {
+    color: #444444;
+}

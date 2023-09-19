@@ -12,6 +12,9 @@ include('./php/process_login.php');
         <script src="script/login_acts.js"></script>
     </head>
     <body>
+        <a href="index.php">
+            <img src="img/logo.png" style="width:150px;position:absolute;top:0px;left:0px;">
+        </a>
         <div id="user_info_dialog_div" style="width:20%;">
             <h3 style="text-align: center">회원가입</h3>
             <form name="join_form" method="POST">
@@ -22,7 +25,7 @@ include('./php/process_login.php');
                     <input name="password" class="input" type="password" placeholder="password"></input>
                     <label class="label">비밀번호 확인</label> 
                     <input name="retypepassword" class="input" type="password" placeholder="retype password"></input>
-                    <p style="color: #FF0000; font-size: 10px;" id="error_msg"></p>
+                    <p style="color: #FF0000; font-size: 10px;" id="error_msg" hidden></p>
                     <input type="submit" class="button" value="Join"/>
                 </div>
             </form>
@@ -61,7 +64,8 @@ include('./php/process_login.php');
             }
 
             if($err_msg != "") {
-                echo "<script>document.getElementById(\"error_msg\").innerHTML = \"".$err_msg."\"</script>";
+                echo "<script>document.getElementById(\"error_msg\").hidden = false;
+                document.getElementById(\"error_msg\").innerHTML = \"".$err_msg."\"</script>";
                 exit();
             }
             
