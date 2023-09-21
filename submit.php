@@ -32,8 +32,9 @@ if($submitted_count == 0) {
     exit();
 }
 
+$json_data = get_survey_data($_COOKIE['unique_id']);
 // Get json data from the database
-$json_entire = json_decode($_COOKIE['survey_info'] , true);
+$json_entire = json_decode($json_data , true);
 $day_info = null;
 foreach($json_entire['days_voted'] as $one_day) {
     if($one_day['date'] == $_POST['requested_day']) {
@@ -104,7 +105,6 @@ foreach($menu_voted as $one_voted_menu) {
 */
 
 // apply changes
-var_dump($json_entire);
 $json_updated = json_encode($json_entire , JSON_UNESCAPED_UNICODE);
 // echo $json_updated;
 // Update database(change json data)

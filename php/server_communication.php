@@ -35,16 +35,20 @@ function increment_connect() {
 	$new_num = 0;
 	if(!$row) {
 		$sql_req = "INSERT INTO connected_number (year,month,day,num) VALUE(".date("Y").",".date("m").",".date("d").",1);";
-		echo $sql_req;
+		// echo $sql_req;
 	}
 	else {
-		$new_num = $row['num']+1;
+		$new_num = ((int)$row['num'])+1;
 		$sql_req = "UPDATE connected_number SET num=$new_num WHERE year=".date("Y")." AND month=".date("m")." AND day=".date("d").";";
-		echo $sql_req;
+		// echo $sql_req;
 	}
+	mysqli_close($connect);
+	$connect = connect_server();
 	if(!mysqli_query($connect , $sql_req)) {
+		mysqli_close($connect);
 		return false;
 	}
+	mysqli_close($connect);
 	return true;
 }
 
