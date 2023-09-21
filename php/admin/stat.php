@@ -81,11 +81,11 @@ else {
         yAxis:[{ title:{ text:'투표수' } },
                { title:{ text:'방문자수' } }],
         legend:{ layout:'vertical',align:'right',verticalAlign:'middle' },
-        series:[{ name:'투표수',yAxis:0,data:[<?php
+        series:[{ yAxis:0,data:[<?php
     for($d=1;$d<=$cur_day_count;$d++) {
         echo get_voted_count_day(date("Y"),date("m"),$d);
         if($d!=$cur_day_count) echo ",";
-    }?>]},{ name:'방문자수',yAxis:1,data:[<?php
+    }?>]},{ yAxis:1,data:[<?php
         for($d=1;$d<=$cur_day_count;$d++) {
             echo $month_visits[$d];
             if($d!=$cur_day_count) echo ",";
