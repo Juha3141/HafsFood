@@ -46,7 +46,6 @@ function json_modify_menu($json_string , $meal , $date , $name , $new_name) {
     return $json_updated;
 }
 
-
 function assign_new_id() {
     $string_list = "1234567890qwertyuiopasdfghjklzxcvnmQWERTYUIOPASDFGHJKLZXCVBNM";
     $rand_string = "";

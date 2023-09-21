@@ -3,23 +3,16 @@
 
 <?php
 
-$connect = connect_server();
-$sql_req = "SELECT * FROM day_selector";
-$result = mysqli_query($connect , $sql_req);
-$row = mysqli_fetch_assoc($result);
-$start_day = $row['start_day'];
-$end_day = $row['end_day'];
-mysqli_close($connect);
-
+$survey_target = get_survey_target_date();
 ?>
 
 <form method="POST" action="modify_db.php?req=6">
     <div style="display:flex;flex-direction:row;align-items:center;">
         <label for="menu_date">
             <p style="font-size: 15px;">설문을 받을 날짜 :
-                <input name="new_survey_start_day" type="date" value="<?php echo $start_day ?>"/>
+                <input name="new_survey_start_day" type="date" value="<?php echo $survey_target[0] ?>"/>
                 ~
-                <input name="new_survey_end_day" type="date" value="<?php echo $end_day ?>"/>
+                <input name="new_survey_end_day" type="date" value="<?php echo $survey_target[1] ?>"/>
             </p>
         </label>
         <input type="submit" value="수정" style="margin:10px;padding:3px;display:inline-block;"/>

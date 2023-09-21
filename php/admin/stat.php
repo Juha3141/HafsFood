@@ -4,46 +4,48 @@
 
 include_once('./php/server_communication.php');
 
-    $total_vote = get_total_vote("total_vote");
-    $good_vote = get_total_vote("good_vote");
-    $middle_vote = get_total_vote("middle_vote");
-    $bad_vote = get_total_vote("bad_vote");
-    if($total_vote == 0) {
-        $good_p = 0;
-        $middle_p = 0;
-        $bad_p = 0;
+$total_vote = get_total_vote("total_vote");
+$good_vote = get_total_vote("good_vote");
+$middle_vote = get_total_vote("middle_vote");
+$bad_vote = get_total_vote("bad_vote");
+if($total_vote == 0) {
+    $good_p = 0;
+    $middle_p = 0;
+    $bad_p = 0;
+}
+else {
+    $good_p = $good_vote/$total_vote*100;
+    $middle_p = $middle_vote/$total_vote*100;
+    $bad_p = $bad_vote/$total_vote*100;
+}
+echo "<script> var total=$total_vote; </script>";
+echo "<script> var good_p=$good_p; </script>";
+echo "<script> var mid_p=$middle_p; </script>";
+echo "<script> var bad_p=$bad_p; </script>";
+// get visited counts
+$day_count = [0,31,28,31,30,31,30,31,31,30,31,30,31];
+$cur_day_count = $day_count[(int)date("m")];
+
+$connect = connect_server();
+$sql_req = "SELECT day,num FROM connected_number WHERE year=".(int)date("Y")." AND month=".(int)date("m").";";
+$month_visits = [];
+for($d = 1; $d <= $cur_day_count; $d++) {
+    $month_visits[$d] = 0;
+}
+$result = mysqli_query($connect , $sql_req);
+if($result) {
+    while($row = mysqli_fetch_assoc($result)) {
+        $month_visits[(int)$row['day']] = (int)$row['num'];
     }
-    else {
-        $good_p = $good_vote/$total_vote*100;
-        $middle_p = $middle_vote/$total_vote*100;
-        $bad_p = $bad_vote/$total_vote*100;
-    }
-    echo "<script> var total=$total_vote; </script>";
-    echo "<script> var good_p=$good_p; </script>";
-    echo "<script> var mid_p=$middle_p; </script>";
-    echo "<script> var bad_p=$bad_p; </script>";
-    $day = date("Y-m-d");
-    if(isset($_GET['stat_date'])) {
-        $day = $_GET['stat_date'];
-    }
-    
-    // get visited counts
-    $day_count = [0,31,28,31,30,31,30,31,31,30,31,30,31];
-    $cur_day_count = $day_count[(int)date("m")];
-    
-    $connect = connect_server();
-    $sql_req = "SELECT day,num FROM connected_number WHERE year=".(int)date("Y")." AND month=".(int)date("m").";";
-    $month_visits = [];
-    for($d = 1; $d <= $cur_day_count; $d++) {
-        $month_visits[$d] = 0;
-    }
-    $result = mysqli_query($connect , $sql_req);
-    if($result) {
-        while($row = mysqli_fetch_assoc($result)) {
-            $month_visits[(int)$row['day']] = (int)$row['num'];
-        }
-    }
-    mysqli_close($connect);
+}
+mysqli_close($connect);
+
+$survey_target = get_survey_target_date();
+$day = $survey_target[0];
+if(isset($_GET['stat_date'])) {
+    $day = $_GET['stat_date'];
+}
+
 ?>
 
 <p style="font-size: 15px;">전체 통계</p>
@@ -66,30 +68,49 @@ else {
 <?php echo '<p style="font-size:10px;margin:0;padding:0px;">투표수:총 '.$total_vote.'회,좋음:'.$good_vote.',보통:'.$middle_vote.',싫음:'.$bad_vote.'</p>'; ?>
 <!-- just move it -->
 <br>
-<div id="graph-container-stat" style="width:100%;height:10%;border-radius:5px"></div>
+<div style="display:flex;flex-direction:row">
+<div id="graph-container-visit" style="width:50%;height:10%;border-radius:5px;margin-right:10px;margin-left:10px;"></div>
+<div id="graph-container-stat" style="width:50%;height:10%;border-radius:5px;margin-right:10px;margin-left:10px;"></div>
+</div>
 
 <script>
-    Highcharts.chart('graph-container-stat', {
-        chart:{ type:'area' },
-        title:{ text:'이번달 날짜당 투표수 및 방문자수' },
+    Highcharts.chart('graph-container-visit', {
+        chart:{ type:'line' },
+        title:{ text:'이번달 방문자수' },
         xAxis:{ title:{ text:'날짜' } , categories:[<?php
     for($d=1;$d<=$cur_day_count;$d++) {
         echo "'$d'";
         if($d!=$cur_day_count) echo ",";
     }
         ?>]},
-        yAxis:[{ title:{ text:'투표수' } },
-               { title:{ text:'방문자수' } }],
+        yAxis:[{ title:{ text:'방문자수' } }],
         legend:{ layout:'vertical',align:'right',verticalAlign:'middle' },
-        series:[{ name:'투표수',yAxis:0,data:[<?php
-    for($d=1;$d<=$cur_day_count;$d++) {
-        echo get_voted_count_day(date("Y"),date("m"),$d);
-        if($d!=$cur_day_count) echo ",";
-    }?>]},{ name:'방문자수',yAxis:1,data:[<?php
+        series:[{name:'방문자수',data:[<?php
         for($d=1;$d<=$cur_day_count;$d++) {
             echo $month_visits[$d];
             if($d!=$cur_day_count) echo ",";
         }?>]}]
+    });
+    Highcharts.chart('graph-container-stat', {
+        chart:{ type:'line' },
+        title:{ text:'설문 투표수(<?php 
+        $month1 = date("m월 d일" , strtotime($survey_target[0]));
+        $month2 = date("m월 d일" , strtotime($survey_target[1]));
+        echo $month1."~".$month2;
+        ?>)' },
+        xAxis:{ title:{ text:'날짜' } , categories:[<?php
+    for($d=strtotime($survey_target[0]);$d!=strtotime("+1 day",strtotime($survey_target[1]));$d=strtotime("+1 day",$d)) {
+        echo date("d",$d);
+        echo ",";
+    }
+        ?>]},
+        yAxis:[{ title:{ text:'투표수' } },],
+        legend:{ layout:'vertical',align:'right',verticalAlign:'middle' },
+        series:[{ name:'투표수',data:[<?php
+    for($d=strtotime($survey_target[0]);$d!=strtotime("+1 day",strtotime($survey_target[1]));$d=strtotime("+1 day",$d)) {
+        echo get_voted_count_day(date("Y",$d),date("m",$d),date("d",$d));
+        echo ",";
+    }?>]}]
     });
 </script>
 

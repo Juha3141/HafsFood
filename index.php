@@ -26,13 +26,13 @@ function check_cookie() {
 update_removed(); // error!!!
 
 // Get info of the survey days
-$connect = connect_server();
-$sql_req = "SELECT * FROM day_selector";
-$result = mysqli_query($connect , $sql_req);
-$row = mysqli_fetch_assoc($result);
-$start_day = $row['start_day'];
-$end_day = $row['end_day'];
-mysqli_close($connect);
+$days = get_survey_target_date();
+if($days == null) {
+    echo "Failed getting survey date. Please ask to the administrator.";
+    exit();
+}
+$start_day = $days[0];
+$end_day = $days[1];
 
 // Get list of affinity, of one week of the past data
 function get_affinity_list($from , $to) { // yeah figure that out

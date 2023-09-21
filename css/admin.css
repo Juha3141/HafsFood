@@ -113,8 +113,7 @@ html {
     align-items: center;
 }
 
-
-.button_submit {
+#autoadd_data_submit {
     width:20%;
     padding: 10px;
     font-weight: bold;
@@ -122,4 +121,8 @@ html {
     border: 0;
     border-radius: 15px;
     background-color: #EEEEEE;
+}
+
+#autoadd_data_submit:hover {
+    background-color: #DFDFDF;
 }

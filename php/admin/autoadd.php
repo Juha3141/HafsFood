@@ -4,8 +4,9 @@
 include_once('simplehtmldom/simple_html_dom.php');
 include_once('php/auto_scrap.php');
 
-$date_from = date("Y-m-d");
-$date_to = date("Y-m-d");
+$survey_target = get_survey_target_date();
+$date_from = $survey_target[0];
+$date_to = $survey_target[1];
 if(isset($_POST['autoadd_date_from'])) {
     $date_from = $_POST['autoadd_date_from'];
 }
@@ -18,7 +19,7 @@ if(isset($_POST['autoadd_date_to'])) {
 *자동 메뉴 추가 : hafs.hs.kr에서 올린 급식 데이터를 자동으로 웹사이트 데이터베이스에 입력해주는 시스템 입니다.
 </p>
 <p style="font-weight:bold">
-체크표시된 메뉴는 현재 추가되어 있지 않은 메뉴 입니다. 메뉴를 체크해제하면 메뉴가 추가되지 않습니다.
+체크표시된 메뉴는 현재 추가되어 있지 않은 메뉴 입니다. 메뉴를 체크해제하면 메뉴가 추가되지 않습니다. (체크표시되어있지 않은 메뉴를 체크표시하면 메뉴가 다시 등록됩니다. 메뉴 중복 방지를 위해 체크표시 되지 않은 메뉴는 체크표시하면 안됩니다.)
 </p>
 
 <form method="POST" action="admin.php#autoadd">

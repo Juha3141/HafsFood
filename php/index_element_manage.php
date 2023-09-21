@@ -140,4 +140,18 @@ function print_special_menu($requested_day) {
     mysqli_close($connect);
 }
 
+function get_survey_target_date() {
+    $connect = connect_server();
+    $sql_req = "SELECT * FROM day_selector";
+    $result = mysqli_query($connect , $sql_req);
+    if(!$result) {
+        mysqli_close($connect);
+        return null;
+    }
+    $row = mysqli_fetch_assoc($result);
+    $data = [$row['start_day'],$row['end_day']];
+    mysqli_close($connect);
+    return $data;
+}
+
 ?>

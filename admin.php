@@ -1,6 +1,7 @@
 <?php
 include('./php/server_communication.php');
 include('./php/admin/admin_tools.php');
+include('./php/index_element_manage.php');
 
 session_start();
 if((!isset($_SESSION['username']))) {

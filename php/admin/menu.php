@@ -1,6 +1,7 @@
 <p style="margin:0;font-weight:bold;font-size:30px;text-align:center;">메뉴 추가/수정</p>
 <?php
-$day = date("Y-m-d");
+$survey_target = get_survey_target_date();
+$day = $survey_target[0];
 if(isset($_GET['menu_date'])) {
     $day = $_GET['menu_date'];
 }
