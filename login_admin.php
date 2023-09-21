@@ -16,23 +16,14 @@ include('./php/process_login.php');
             <img src="img/logo.png" style="width:150px;position:absolute;top:0px;left:0px;">
         </a>
         <div id="user_info_dialog_div" style="width:20%;">
-            <h3 style="text-align: center">로그인</h3>
+            <h3 style="text-align: center">관리자 로그인</h3>
             <form name="login_form" method="POST">
-                <div id="text_select">
-                    <span class="right">
-                        <label for="login_type_student"><input type="radio" name="login_type" id="login_type_student" value="user_list" checked="checked">학생</label>
-                        <label for="login_type_adminis"><input type="radio" name="login_type" id="login_type_adminis" value="admin_list">관리자</label>
-                    </span>
-                </div>
                 <div id="user_info_dialog">
                     <label class="label">아이디</label> 
                     <input name="user" class="input" type="text" placeholder="id"></input>
                     <label class="label">비밀번호</label> 
                     <input name="password" class="input" type="password" placeholder="password"></input>
                     <p style="color:#FF0000;font-size:10px;margin:5px;" id="error_msg" hidden></p>
-                    <a href="join.php" id="join_txt">
-                        회원가입
-                    </a>
                     <input type="submit" class="button" value="Login"/>
                 </div>
             </form>
@@ -51,20 +42,13 @@ include('./php/process_login.php');
                 document.getElementById(\"error_msg\").innerHTML = \"비밀번호를 입력해 주세요!\";</script>";
                 exit();
             }
-            $result = process_submit($_POST['user'],$_POST['password'],$_POST['login_type']);
+            $result = process_submit($_POST['user'],$_POST['password'],"admin_list");
             if($result == 0) {
                 $_POST['password'] = "";
                 session_start();
                 $_SESSION['username'] = $_POST['user'];
                 // where to go?
-                if($_POST['login_type'] == "user_list") {
-                    $_SESSION['account_type'] = "user";
-                    echo "<script>location.href = \"./index.php\"</script>";
-                }
-                else if($_POST['login_type'] == "admin_list") {
-                    $_SESSION['account_type'] = "admin";
-                    echo "<script>location.href = \"./admin.php\"</script>"; // admin page
-                }
+                echo "<script>location.href = \"./admin.php\"</script>"; // admin page
             }
             else if($result == -2) { // incorrect password
                 echo "<script>document.getElementById(\"error_msg\").hidden = false;

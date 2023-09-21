@@ -2,11 +2,14 @@
 
 function get_total_vote($col) {
     $connect = connect_server();
-    $sql_req = "SELECT SUM($col) FROM user_list;";
-    $result = mysqli_query($connect , $sql_req);
-    $value = mysqli_fetch_assoc($result)['SUM('.$col.')'];
+    $total_value = 0;
+    foreach(["breakfast","lunch","dinner"] as $table) {
+        $sql_req = "SELECT SUM($col) FROM menu_list_$table";
+        $result = mysqli_query($connect , $sql_req);
+        $total_value += mysqli_fetch_assoc($result)['SUM('.$col.')'];
+    }
     mysqli_close($connect);
-    return $value;
+    return $total_value;
 }
 
 function print_progbar_n($id , $count , $innerhtmls , $colors , $percentages) {

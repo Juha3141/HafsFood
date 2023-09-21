@@ -1,7 +1,7 @@
 <?php
 function get_affinities_from_db($date) {
-    $data = get_user_data($_SESSION['username']);
-    $json_entire = json_decode($data['survey_info'] , true);
+    $json_raw = get_survey_data($_COOKIE['unique_id']);
+    $json_entire = json_decode($json_raw , true);
     $affinities = [];
     foreach($json_entire['days_voted'] as $one_day) {
         if($one_day['date'] == $date) {
@@ -19,7 +19,7 @@ function get_affinities_from_post($meal_table , $meal_name , $day) {
         
         $var_name = "affinity_".$i."_".$meal_name;
         // For debug
-        $affinities[] = [$menu_results[$i]['name'] , $_POST[$var_name]];
+        $affinities[] = [$menu_results[$i]['id'] , $_POST[$var_name]];
         // For debug
         // echo $var_name." :".$_POST[$var_name].",".$menu_results[$i]['name']."<br>";
     }
@@ -38,6 +38,24 @@ function add_affinity($json_entire , $affinities , $day) {
     $array = ["date"=>$day , "menu_voted"=>$menu_voted];
     $json_entire['days_voted'][] = $array;
     return $json_entire;
+}
+
+function increment_vote_by_id($date , $table_name , $menu_id , $vote_option , $vote_inc) {
+    $connect = connect_server();
+    $sql_req = "SELECT total_vote,good_vote,middle_vote,bad_vote FROM ".$table_name." WHERE id=\"".$menu_id."\" AND date=\"".$date."\";";
+    $result = mysqli_query($connect , $sql_req);
+    if(!$result) {
+        return;
+    }
+    $data = mysqli_fetch_assoc($result);
+    $data[$vote_option] = ((int)$data[$vote_option])+$vote_inc;
+    $sql_req = "UPDATE ".$table_name." SET ".$vote_option."=".$data[$vote_option]." WHERE id=\"".$menu_id."\" AND date=\"".$date."\";";
+    mysqli_close($connect);
+
+    $connect = connect_server();
+    mysqli_query($connect , $sql_req);
+    mysqli_close($connect);
+    return;
 }
 
 function increment_vote($date , $table_name , $menu_name , $vote_option , $vote_inc) {
@@ -62,26 +80,6 @@ function increment_vote($date , $table_name , $menu_name , $vote_option , $vote_
     mysqli_query($connect , $sql_req);
     mysqli_close($connect);
     return;
-}
-
-// $column_name : total_vote , good_vote , middle_vote , bad_vote
-function user_increment_vote($column_name , $user_id , $inc) {
-    $connect = connect_server();
-    $sql_req = "SELECT ".$column_name." FROM user_list WHERE id=\"".$user_id."\";";
-    // echo $sql_req."<br>";
-    $result = mysqli_query($connect , $sql_req);
-    if(!$result) {
-        return;
-    }
-    $data = mysqli_fetch_assoc($result);
-    $vote_count = $data[$column_name]+$inc;
-    // echo "new vote count : ".$vote_count."<br>";
-    mysqli_close($connect);
-
-    $sql_req = "UPDATE user_list SET ".$column_name."=".$vote_count." WHERE id=\"".$user_id."\";";
-    $connect = connect_server();
-    mysqli_query($connect , $sql_req);
-    mysqli_close($connect);
 }
 
 ?>

@@ -1,6 +1,9 @@
 <p style="margin:0;font-weight:bold;font-size:30px;text-align:center;">통계</p>
 
 <?php
+
+include_once('./php/server_communication.php');
+
     $total_vote = get_total_vote("total_vote");
     $good_vote = get_total_vote("good_vote");
     $middle_vote = get_total_vote("middle_vote");
@@ -23,6 +26,24 @@
     if(isset($_GET['stat_date'])) {
         $day = $_GET['stat_date'];
     }
+    
+    // get visited counts
+    $day_count = [0,31,28,31,30,31,30,31,31,30,31,30,31];
+    $cur_day_count = $day_count[(int)date("m")];
+    
+    $connect = connect_server();
+    $sql_req = "SELECT day,num FROM connected_number WHERE year=".(int)date("Y")." AND month=".(int)date("m").";";
+    $month_visits = [];
+    for($d = 1; $d <= $cur_day_count; $d++) {
+        $month_visits[$d] = 0;
+    }
+    $result = mysqli_query($connect , $sql_req);
+    if($result) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $month_visits[(int)$row['day']] = (int)$row['num'];
+        }
+    }
+    mysqli_close($connect);
 ?>
 
 <p style="font-size: 15px;">전체 통계</p>
@@ -49,23 +70,26 @@ else {
 
 <script>
     Highcharts.chart('graph-container-stat', {
-        chart:{ type:'line' },
-        title:{ text:'이번달 날짜당 투표율' },
+        chart:{ type:'area' },
+        title:{ text:'이번달 날짜당 투표수 및 방문자수' },
         xAxis:{ title:{ text:'날짜' } , categories:[<?php
-    $day_count = [0,31,28,31,30,31,30,31,31,30,31,30,31];
-    $cur_day_count = $day_count[(int)date("m")];
     for($d=1;$d<=$cur_day_count;$d++) {
         echo "'$d'";
         if($d!=$cur_day_count) echo ",";
-    }    
+    }
         ?>]},
-        yAxis:{ title:{ text:'투표수' } },
+        yAxis:[{ title:{ text:'투표수' } },
+               { title:{ text:'방문자수' } }],
         legend:{ layout:'vertical',align:'right',verticalAlign:'middle' },
-        series:[{ name:'투표수',data:[<?php
+        series:[{ name:'투표수',yAxis:0,data:[<?php
     for($d=1;$d<=$cur_day_count;$d++) {
         echo get_voted_count_day(date("Y"),date("m"),$d);
         if($d!=$cur_day_count) echo ",";
-    }?>]}]
+    }?>]},{ name:'방문자수',yAxis:1,data:[<?php
+        for($d=1;$d<=$cur_day_count;$d++) {
+            echo $month_visits[$d];
+            if($d!=$cur_day_count) echo ",";
+        }?>]}]
     });
 </script>
 

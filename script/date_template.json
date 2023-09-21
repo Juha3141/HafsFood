@@ -9,7 +9,7 @@
         {
             "date":"2023-08-31",
             "menu_voted":[
-                {"name":"잡곡밥","meal":"breakfast","affinity":"good"},
+                {"id":1234,"meal":"breakfast","affinity":"good"}, // save it as ID
                 {"name":"미역국","meal":"breakfast","affinity":"good"},
                 {"name":"쇠고기숙주볶음","meal":"breakfast","affinity":"good"},
                 {"name":"수제새우살전","meal":"breakfast","affinity":"good"}

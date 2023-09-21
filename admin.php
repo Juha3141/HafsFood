@@ -3,7 +3,7 @@ include('./php/server_communication.php');
 include('./php/admin/admin_tools.php');
 
 session_start();
-if((!isset($_SESSION['username']))||($_SESSION['account_type'] != "admin")) {
+if((!isset($_SESSION['username']))) {
     echo "<script>history.back();</script>";
     exit();
 }

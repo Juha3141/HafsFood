@@ -3,22 +3,20 @@
 
 session_start();
 
-function print_login_button() {
+function print_admin_login() {
     echo "
-    <a href=\"join.php\" id=\"join_btn\" class=\"href\">회원가입</a>
-    <a href=\"login.php\" id=\"login_btn\" class=\"href\">로그인</a>
+    <a href=\"login_admin.php\" id=\"login_btn\" class=\"href\">관리자 로그인</a>
     ";
 }
 
 function print_my_info() {
-    $href = ($_SESSION['account_type'] == "admin") ? "admin.php" : "mypage.php";
-    $name = ($_SESSION['account_type'] == "admin") ? "관리자 페이지" : $_SESSION['username'];
     echo "
     <a href=\"logout.php\" id=\"logout_btn\" class=\"href\">로그아웃</a>
-    <a href=\"$href\" id=\"info_btn\" class=\"href\">".$_SESSION['username']."</a>
+    <a href=\"admin.php\" id=\"info_btn\" class=\"href\">관리자 페이지</a>
     ";
 }
 
+// disclaimer : menu_name is number
 function print_survey($menu_name , $meal_name , $initial_value , $is_unwritable , $k) {
     echo "<div style=\"display:flex;justify-content:center;\">";
     $text = ["좋음" , "보통" , "싫음"];
@@ -108,18 +106,13 @@ function print_menus($table_name , $meal_name , $requested_day , $affinity_list 
     for($i = 0; $i < count($valid_results); $i++) {
         $row = $valid_results[$i];
         echo "<div class=\"menu_selector\"><br><p class=\"menu_name\">".$row['name']."</p>";
-        if(isset($_SESSION['username']) && $_SESSION['account_type'] == "user") {
-            $initial_value = "";
-            foreach($meal_affinities as $info) {
-                if($info['name'] == $row['name']) {
-                    $initial_value = $info['affinity'];
-                }
+        $initial_value = "";
+        foreach($meal_affinities as $info) {
+            if($info['id'] == $row['id']) { // now use id to discriminate menu
+                $initial_value = $info['affinity'];
             }
-            $k = print_survey($i , $meal_name , $initial_value , $is_unwritable , $k);
         }
-        else {
-            echo "<br>";
-        }
+        $k = print_survey($i , $meal_name , $initial_value , $is_unwritable , $k);
         echo "</div>";
     }
 }
@@ -138,15 +131,6 @@ function print_special_menu() {
 
     echo "<div id=\"special_main\" onclick=\"goto_special()\">".$specialmenu_string."</div>";
     mysqli_close($connect);
-}
-
-function get_user_data($username) {
-    $connect = connect_server();
-    $sql_req = "SELECT * FROM user_list WHERE id=\"".$username."\";";
-    $result = mysqli_query($connect , $sql_req);
-    $data = mysqli_fetch_assoc($result);
-    mysqli_close($connect);
-    return $data;
 }
 
 ?>

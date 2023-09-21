@@ -1,14 +1,32 @@
 <?php
-session_start();
+session_start(); // session : only for admin login
 
 include('./php/server_communication.php');
 include('./php/index_element_manage.php');
 include('./php/process_submit.php');
+include('./php/user_data.php');
+
+if(!isset($_SESSION['connected'])) {
+    increment_connect();
+    $_SESSION['connected'] = 1;
+}
+
+if(!isset($_COOKIE['unique_id'])) {
+    $new_id = assign_new_id();
+    setcookie('unique_id' , $new_id , time()+(10*365*60*60));
+    insert_user_db($new_id);
+}
+
+function check_cookie() {
+    return isset($_COOKIE['unique_id']);
+}
+
+update_removed();
 
 // Get list of affinity, of one week of the past data
 function get_affinity_list() {
     $affinity_list = [];
-    if(!isset($_SESSION['username'])) {
+    if(!check_cookie()) {
         return null;
     }
     for($i = 0; $i < 7; $i++) {
@@ -28,7 +46,7 @@ function get_affinity_list() {
     <a name="top"></a>
     <meta charset="utf-8"/>
     <head>
-        <title>HAFS 급식 선호도 조사</title>
+        <title>savemate</title>
         <link rel="stylesheet" type="text/css" href="css/main.css"></style>
         <link rel="stylesheet" type="text/css" href="css/progbar.css"></style>
         <script src="script/index_acts.js"></script>
@@ -41,67 +59,64 @@ function get_affinity_list() {
         <div id="top">
             <div id="today_show" style="float: center;"></div>
                 <?php
-                if(!isset($_SESSION['username'])) {
-                    print_login_button();
+                if(isset($_SESSION['username'])) {
+                    print_my_info();
                 }
                 else {
-                    print_my_info();
+                    print_admin_login();
                 }
                 print_special_menu();
                 
-                if(isset($_SESSION['username']) && $_SESSION['account_type'] == "user") {
-                    $total_menu_count = 0;
-                    $total_voted_count = 0;
-                    for($i = 0; $i < 7; $i++) {
-                        $date_value = date("Y-m-d" , strtotime("+".$i." day"));
-                        
-                        $total_menu_count += get_menu_count($date_value);
-                        $total_voted_count += count(get_affinities_from_db($date_value));
-                    }
-
-                    if(!isset($_GET['day_selector'])) {
-                        $date_value = date("Y-m-d" , strtotime("0 day"));
-                    }
-                    else {
-                        $date_value = $_GET['day_selector'];
-                    }
-                    $menu_count = get_menu_count($date_value);
-                    $affinities = get_affinities_from_db($date_value);
-                    $voted_count = count($affinities);
-                    // show the percentage of survey
-                    if($menu_count != 0) {
-                        echo '
-                        <div style="display: flex; justify-content: space-between;">
-                            <span>하루 설문 진행도</span>
-                            <span><?php echo $voted_count."/".$menu_count; ?></span>
-                        </div>
-                        
-                        <div id="prog_bar_body_1" class="progressbar_outer">
-                            <div id="prog_bar_1" class="progressbar_inner">0%</div>
-                        </div>
-                        <br>
-                        ';
-                    }
-                    if($total_menu_count != 0) {
-                        echo '
-                        <div style="display: flex; justify-content: space-between;">
-                            <span>전체 설문 진행도</span>
-                            <span><?php echo $voted_count."/".$menu_count; ?></span>    
-                        </div>
-                        
-                        <div id="prog_bar_body_2" class="progressbar_outer">
-                            <div id="prog_bar_2" class="progressbar_inner">0%</div>
-                        </div>
-                        ';
-                    }
-                    $percentage = 0;
-                    $total_percentage = 0;
-                    if($menu_count != 0) {
-                        $percentage = (($voted_count/$menu_count)*100);
-                    }
-                    if($total_menu_count != 0) {
-                        $total_percentage = (($total_voted_count/$total_menu_count)*100);
-                    }
+                $total_menu_count = 0;
+                $total_voted_count = 0;
+                for($i = 0; $i < 7; $i++) {
+                    $date_value = date("Y-m-d" , strtotime("+".$i." day"));
+                    
+                    $total_menu_count += get_menu_count($date_value);
+                    $total_voted_count += count(get_affinities_from_db($date_value));
+                }
+                if(!isset($_GET['day_selector'])) {
+                    $date_value = date("Y-m-d" , strtotime("0 day"));
+                }
+                else {
+                    $date_value = $_GET['day_selector'];
+                }
+                $menu_count = get_menu_count($date_value);
+                $affinities = get_affinities_from_db($date_value);
+                $voted_count = count($affinities);
+                // show the percentage of survey
+                if($menu_count != 0) {
+                    echo '
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>하루 설문 진행도</span>
+                        <span><?php echo $voted_count."/".$menu_count; ?></span>
+                    </div>
+                    
+                    <div id="prog_bar_body_1" class="progressbar_outer">
+                        <div id="prog_bar_1" class="progressbar_inner">0%</div>
+                    </div>
+                    <br>
+                    ';
+                }
+                if($total_menu_count != 0) {
+                    echo '
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>전체 설문 진행도</span>
+                        <span><?php echo $voted_count."/".$menu_count; ?></span>    
+                    </div>
+                    
+                    <div id="prog_bar_body_2" class="progressbar_outer">
+                        <div id="prog_bar_2" class="progressbar_inner">0%</div>
+                    </div>
+                    ';
+                }
+                $percentage = 0;
+                $total_percentage = 0;
+                if($menu_count != 0) {
+                    $percentage = (($voted_count/$menu_count)*100);
+                }
+                if($total_menu_count != 0) {
+                    $total_percentage = (($total_voted_count/$total_menu_count)*100);
                 }
                 ?>
             </div>
@@ -111,7 +126,6 @@ function get_affinity_list() {
         <script> start_progressbar("progressbar_inner" , [percentage_local , percentage_total]); </script>
         <script> update_date(); </script>
         <br>
-        
 
         <form method="GET" action="./index.php">
             <div id="days_count">
@@ -123,17 +137,15 @@ function get_affinity_list() {
                 $week = date("w" , strtotime("+".$i." day"));
                 $date_value = date("Y-m-d" , strtotime("+".$i." day"));
                 $did = "";
-                if(isset($_SESSION['username']) && $_SESSION['account_type'] == "user") {
-                    $affinities = get_affinities_from_db($date_value);
-                    $menu_count = get_menu_count($date_value);
-                    // Compare the number of submission and total menus
-                    // If they are same -> done submitting
-                    if(count($affinities) != $menu_count) {
-                        $did = "not_done";
-                    }
-                    $total_did_votes += count($affinities);
-                    $total_required_votes += $menu_count;
+                $affinities = get_affinities_from_db($date_value);
+                $menu_count = get_menu_count($date_value);
+                // Compare the number of submission and total menus
+                // If they are same -> done submitting
+                if(count($affinities) != $menu_count) {
+                    $did = "not_done";
                 }
+                $total_did_votes += count($affinities);
+                $total_required_votes += $menu_count;
                 $classes = "def week ".$did;
                 if($i == 0) {
                     $classes .= " today";
@@ -141,13 +153,7 @@ function get_affinity_list() {
                 echo "<div class=\"current_day\"><button class=\"".$classes."\" name=\"day_selector\" type=\"submit\" value=\"".$date_value."\" ?>".$week_list[$week]."</button><div class=\"def\">".$day."</div></div>";
             }
             ?>
-            </div> 
-            <?php
-            if(!isset($_SESSION['username'])) { ?>
-                <div id="not_logined">
-                    <a href="login.php" class="login_inquiry">로그인</a> 하시면 설문하실 수 있습니다.
-                </div>
-            <?php } ?>
+            </div>
         </form>
 
         <hr style="border: none; color: #000000; background-color: #000000; height: 5px;">
@@ -200,13 +206,11 @@ function get_affinity_list() {
                 ?>
             </div>
             <?php
-            if(isset($_SESSION['username']) && $_SESSION['account_type'] == "user") { // later!
-                if(($menu_count != $voted_count)) {
-                    if($menu_count != 0) {
-                        echo "<div id=\"submit_final\"><button class=\"button\" type=\"submit\">설문 보내기</button></div>";
-                    }
-                }
-            }
+          //   if(($menu_count != $voted_count)) {
+             //    if($menu_count != 0) {
+                    echo "<div id=\"submit_final\"><button class=\"button\" type=\"submit\">설문 보내기</button></div>";
+                // }
+            // }
             ?>
         </form>
     </body>
