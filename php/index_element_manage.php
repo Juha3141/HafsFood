@@ -31,9 +31,12 @@ function print_survey($menu_name , $meal_name , $initial_value , $is_unwritable 
         if($is_unwritable) {
             $readonly = " onclick=\"return false;\"";
         }
+        else {
+            $readonly = " onclick=\"handle_radios(this);\"";
+        }
         echo "<div style=\"padding:10px;display:flex;align-items:center;\">
             <label>".$text[$i]."</label>
-            <input id=\"radio_".$meal_name."_$k\" class=\"radio\" name=\"affinity_".$menu_name."_".$meal_name."\" type=\"radio\" value=\"".$value[$i]."\" onclick=\"handle_radios(this);\"".$checked."".$readonly."/>
+            <input id=\"radio_".$meal_name."_$k\" class=\"radio\" name=\"affinity_".$menu_name."_".$meal_name."\" type=\"radio\" value=\"".$value[$i]."\"".$checked."".$readonly."/>
             <script>set_radio(document.getElementById(\"radio_".$meal_name."_$k\"),$initial_value);</script>
             </div>";
         $k++;

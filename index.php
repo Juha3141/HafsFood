@@ -168,6 +168,19 @@ function get_affinity_list() {
             echo $week_list[$week];
             ?>
         </div>
+        <?php 
+            if(!isset($_GET['day_selector'])) {
+                $date_value = date("Y-m-d" , strtotime("0 day"));
+            }
+            else {
+                $date_value = $_GET['day_selector'];
+            }
+            $menu_count = get_menu_count($date_value);
+            $voted_count = count(get_affinities_from_db($date_value));
+            if($voted_count == $menu_count) {
+                echo "설문이 완료되었습니다.";
+            }
+        ?>
         <script>
         const radio_prev_map = new Map();
         function set_radio(radio,init) {
@@ -206,11 +219,11 @@ function get_affinity_list() {
                 ?>
             </div>
             <?php
-          //   if(($menu_count != $voted_count)) {
-             //    if($menu_count != 0) {
-                    echo "<div id=\"submit_final\"><button class=\"button\" type=\"submit\">설문 보내기</button></div>";
-                // }
-            // }
+            if(($menu_count != $voted_count)) {
+                if($menu_count != 0) {
+                   echo "<div id=\"submit_final\"><button class=\"button\" type=\"submit\">설문 보내기</button></div>";
+                }
+            }
             ?>
         </form>
     </body>
