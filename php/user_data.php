@@ -83,18 +83,13 @@ function get_survey_data($unique_id) {
 
 function rewrite_survey_data($unique_id , $new_info) {
     $connect = connect_server();
-    $sql_req = "UPDATE user_list SET survey_info='$new_info' WHERE unique_id=\"$unique_id\"";
+    $sql_req = "UPDATE user_list SET survey_info='$new_info' WHERE unique_id=\"$unique_id\";";
     $result = mysqli_query($connect , $sql_req);
     mysqli_close($connect);
-    if(!$result) {
-        return false;
-    }
-    return true;
 }
 
 function get_menu_id_list($date) {
     $connect = connect_server();
-    
     $data = ["breakfast"=>[] , "lunch"=>[] , "dinner"=>[]];
     foreach(["breakfast","lunch","dinner"] as $table) {
         $sql_req = "SELECT * FROM menu_list_".$table." WHERE date=\"".$date."\";";
@@ -120,9 +115,9 @@ function does_exist($menu , $menu_id_list) {
 function update_removed() {
     $json_string = get_survey_data($_COOKIE['unique_id']);
     $json_entire = json_decode($json_string , true);
-    for($d = 0; $d < count($json_entire['days_voted']); $d++) {
-        echo $json_entire[$d]['date']."<br>";
-        $menu_id_list = get_menu_id_list($json_entire['days_voted'][$d]['date'] , $table);
+    for($d = 0; $d < count($json_entire['days_voted']); $d++) { // error
+    //  echo $json_entire['days_voted'][$d]['date']."<br>";
+        $menu_id_list = get_menu_id_list($json_entire['days_voted'][$d]['date']);
         for($m = 0; $m < count($json_entire['days_voted'][$d]['menu_voted']); $m++) {
             if(!does_exist($json_entire['days_voted'][$d]['menu_voted'][$m] , $menu_id_list)) {
                 array_splice($json_entire['days_voted'][$d]['menu_voted'] , $m , 1);

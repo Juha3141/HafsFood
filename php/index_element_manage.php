@@ -79,16 +79,18 @@ function get_menus($table_name , $requested_day) {
 function print_menus($table_name , $meal_name , $requested_day , $affinity_list , $is_unwritable) {
     $today_affinities = null;
     $meal_affinities = [];
-    if($affinity_list != null) { 
+    if($affinity_list != null) {
         foreach($affinity_list as $aff_per_day) {
             // $aff_per_day[0] : day
             if($aff_per_day[0] == $requested_day) {
                 $today_affinities = $aff_per_day[1];
             }
         }
-        for($i = 0; $i < count($today_affinities); $i++) {
-            if($today_affinities[$i]['meal'] == $meal_name) {
-                $meal_affinities[] = $today_affinities[$i];
+        if($today_affinities != null) {
+            for($i = 0; $i < count($today_affinities); $i++) {
+                if($today_affinities[$i]['meal'] == $meal_name) {
+                    $meal_affinities[] = $today_affinities[$i];
+                }
             }
         }
     }
@@ -120,9 +122,11 @@ function print_menus($table_name , $meal_name , $requested_day , $affinity_list 
     }
 }
 
-function print_special_menu() {
-    $connect = connect_server();        
-    $sql_req = "SELECT * FROM special_food WHERE month=".(int)date("m").";";
+function print_special_menu($requested_day) {
+    $connect = connect_server();
+    $year = (int)date("Y" , strtotime($requested_day));
+    $month = (int)date("m" , strtotime($requested_day));
+    $sql_req = "SELECT * FROM special_food WHERE month=".$month." AND year=".$year.";";
     $result = mysqli_query($connect , $sql_req);
     if($result == null) {
         mysqli_close($connect);
@@ -130,7 +134,7 @@ function print_special_menu() {
     }
     // search from ID
     $menuname = mysqli_fetch_assoc($result)['name'];
-    $specialmenu_string = (int)date("m")."월 특식 : ".$menuname;
+    $specialmenu_string = $month."월 특식 : ".$menuname;
 
     echo "<div id=\"special_main\" onclick=\"goto_special()\">".$specialmenu_string."</div>";
     mysqli_close($connect);

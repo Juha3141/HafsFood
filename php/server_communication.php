@@ -42,14 +42,8 @@ function increment_connect() {
 		$sql_req = "UPDATE connected_number SET num=$new_num WHERE year=".date("Y")." AND month=".date("m")." AND day=".date("d").";";
 		// echo $sql_req;
 	}
+	mysqli_query($connect , $sql_req);
 	mysqli_close($connect);
-	$connect = connect_server();
-	if(!mysqli_query($connect , $sql_req)) {
-		mysqli_close($connect);
-		return false;
-	}
-	mysqli_close($connect);
-	return true;
 }
 
 ?>

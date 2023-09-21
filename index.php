@@ -12,28 +12,30 @@ if(!isset($_SESSION['connected'])) {
 }
 
 if(!isset($_COOKIE['unique_id'])) {
+    echo "Please wait..";
     $new_id = assign_new_id();
     setcookie('unique_id' , $new_id , time()+(10*365*60*60));
     insert_user_db($new_id);
+    header("Refresh:0");
 }
 
 function check_cookie() {
     return isset($_COOKIE['unique_id']);
 }
 
-update_removed();
+update_removed(); // error!!!
+// Two weeks later
+$days_later = 14;
+
 
 // Get list of affinity, of one week of the past data
-function get_affinity_list() {
+function get_affinity_list($from , $to) { // yeah figure that out
     $affinity_list = [];
     if(!check_cookie()) {
         return null;
     }
-    for($i = 0; $i < 7; $i++) {
-        $day = date("d" , strtotime("+".$i." day"));
-        $week = date("w" , strtotime("+".$i." day"));
-        
-        $date_value = date("Y-m-d" , strtotime("+".$i." day"));
+    for($day = strtotime($from); $day != strtotime("+1 day" , strtotime($to)); $day = strtotime("+1 day" , $day)) {
+        $date_value = date("Y-m-d" , $day);
         $affinities = get_affinities_from_db($date_value);
         $affinity_list[] = [$date_value , $affinities];
     }
@@ -57,7 +59,12 @@ function get_affinity_list() {
             <img src="img/logo.png" style="width:150px;position:absolute;top:0px;left:0px;">
         </a>
         <div id="top">
-            <div id="today_show" style="float: center;"></div>
+            <div id="today_show" style="float: center;">
+                <?php
+                    echo date("Y. m. d. - " , strtotime("+".$days_later." day"));
+                    echo date("Y. m. d." , strtotime("+".($days_later+7)." day"));
+                ?>
+            </div>
                 <?php
                 if(isset($_SESSION['username'])) {
                     print_my_info();
@@ -65,21 +72,22 @@ function get_affinity_list() {
                 else {
                     print_admin_login();
                 }
-                print_special_menu();
-                
-                $total_menu_count = 0;
-                $total_voted_count = 0;
-                for($i = 0; $i < 7; $i++) {
-                    $date_value = date("Y-m-d" , strtotime("+".$i." day"));
-                    
-                    $total_menu_count += get_menu_count($date_value);
-                    $total_voted_count += count(get_affinities_from_db($date_value));
-                }
                 if(!isset($_GET['day_selector'])) {
-                    $date_value = date("Y-m-d" , strtotime("0 day"));
+                    $date_value = date("Y-m-d" , strtotime("+".$days_later." day"));
                 }
                 else {
                     $date_value = $_GET['day_selector'];
+                }
+                print_special_menu($date_value);
+                
+                $total_menu_count = 0;
+                $total_voted_count = 0;
+
+                for($i = $days_later; $i < $days_later+7; $i++) {
+                    $one_date = date("Y-m-d" , strtotime("+".$i." day"));
+                    
+                    $total_menu_count += get_menu_count($one_date);
+                    $total_voted_count += count(get_affinities_from_db($one_date));
                 }
                 $menu_count = get_menu_count($date_value);
                 $affinities = get_affinities_from_db($date_value);
@@ -124,7 +132,6 @@ function get_affinity_list() {
         <?php echo "<script>var percentage_local = ".$percentage."</script>"; ?>
         <?php echo "<script>var percentage_total = ".$total_percentage."</script>"; ?>
         <script> start_progressbar("progressbar_inner" , [percentage_local , percentage_total]); </script>
-        <script> update_date(); </script>
         <br>
 
         <form method="GET" action="./index.php">
@@ -132,7 +139,8 @@ function get_affinity_list() {
             <?php
             $week_list = ["일","월","화","수","목","금","토"];
             // Print the day selector
-            for($i = 0; $i < 7; $i++) {
+            for($i = $days_later; $i < $days_later+7; $i++) {
+                $month = date("m" , strtotime("+".$i." day"));
                 $day = date("d" , strtotime("+".$i." day"));
                 $week = date("w" , strtotime("+".$i." day"));
                 $date_value = date("Y-m-d" , strtotime("+".$i." day"));
@@ -147,10 +155,7 @@ function get_affinity_list() {
                 $total_did_votes += count($affinities);
                 $total_required_votes += $menu_count;
                 $classes = "def week ".$did;
-                if($i == 0) {
-                    $classes .= " today";
-                }
-                echo "<div class=\"current_day\"><button class=\"".$classes."\" name=\"day_selector\" type=\"submit\" value=\"".$date_value."\" ?>".$week_list[$week]."</button><div class=\"def\">".$day."</div></div>";
+                echo "<div class=\"current_day\"><button class=\"".$classes."\" name=\"day_selector\" type=\"submit\" value=\"".$date_value."\" ?>".$week_list[$week]."</button><div class=\"def\">".$month."/".$day."</div></div>";
             }
             ?>
             </div>
@@ -161,23 +166,27 @@ function get_affinity_list() {
             <?php
             // Print name of the selected week
             $week_list = ["일요일","월요일","화요일","수요일","목요일","금요일","토요일"];
-            $week = date("w" , strtotime("0 day"));
+            $month = (int)date("m" , strtotime($days_later." day"));
+            $day = (int)date("d" , strtotime($days_later." day"));
+            $week = (int)date("w" , strtotime($days_later." day"));
             if($_GET['day_selector'] != "") {
-                $week = date("w" , strtotime($_GET['day_selector']));
+                $month = (int)date("m" , strtotime($_GET['day_selector']));
+                $day = (int)date("d" , strtotime($_GET['day_selector']));
+                $week = (int)date("w" , strtotime($_GET['day_selector']));
             }
             echo $week_list[$week];
             ?>
         </div>
         <?php 
             if(!isset($_GET['day_selector'])) {
-                $date_value = date("Y-m-d" , strtotime("0 day"));
+                $date_value = date("Y-m-d" , strtotime($days_later." day"));
             }
             else {
                 $date_value = $_GET['day_selector'];
             }
             $menu_count = get_menu_count($date_value);
             $voted_count = count(get_affinities_from_db($date_value));
-            if($voted_count == $menu_count) {
+            if($voted_count == $menu_count && $menu_count != 0) {
                 echo "설문이 완료되었습니다.";
             }
         ?>
@@ -208,11 +217,11 @@ function get_affinity_list() {
                     $requested_day = $_GET['day_selector'];
 
                     if(!isset($_GET['day_selector'])) {
-                        $requested_day = date("Y-m-d");
+                        $requested_day = date("Y-m-d" , strtotime("+".$days_later." day"));
                     }
                     echo "<input type=\"hidden\" name=\"requested_day\" value=\"".$requested_day."\">";
-                    // print menus and the radios 
-                    $affinity_list = get_affinity_list();
+                    // print menus and the radios
+                    $affinity_list = get_affinity_list($requested_day , date("Y-m-d" , strtotime("+7 days" , strtotime($requested_day))));
                     print_menus($meal_name_n_db[0],$meal_name_n_db[2],$requested_day,$affinity_list,$menu_count == $voted_count);
                     echo "</div>";
                 }
