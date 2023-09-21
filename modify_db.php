@@ -182,7 +182,7 @@ function do_autoadd() {
         if(isset($_POST['autoadd_chk_'.$i])) {
             $parsed_post = explode("|" , $_POST['autoadd_chk_'.$i]);
             $queries[] = "INSERT INTO menu_list_".$parsed_post[1]." (date,name) VALUE(\"".$parsed_post[0]."\",\"".$parsed_post[2]."\");";
-            echo $queries[$new_count]."<br>";
+            // echo $queries[$new_count]."<br>";
             $new_count++;
         }
     }
@@ -198,12 +198,37 @@ function do_autoadd() {
     echo '<script>location.href = "admin.php";</script>';
 }
 
+function do_setdate() {
+    if($_POST['new_survey_start_day'] != block_sql_injection($_POST['new_survey_start_day'])
+    ||$_POST['new_survey_end_day'] != block_sql_injection($_POST['new_survey_end_day'])) {
+        echo "please try again.";
+        exit();
+    }
+    $connect = connect_server();
+    $start_day = $_POST['new_survey_start_day'];
+    $end_day = $_POST['new_survey_end_day'];
+    $sql_req = "UPDATE day_selector SET start_day=\"$start_day\",end_day=\"$end_day\" WHERE 1=1;";
+    $result = mysqli_query($connect , $sql_req);
+    mysqli_close($connect);
+    if(!$result) {
+        die_return();
+    }
+    echo '<script>alert("수정되었습니다");</script>';
+    echo '<script>location.href = "admin.php";</script>';
+}
+
+if(!isset($_SESSION["username"])) {
+    echo "no hack ~_~";
+    exit();
+}
+
 switch($_GET['req']) {
     case 1: do_modify(); break;
     case 2: do_remove(); break;
     case 3: do_create(); break;
     case 4: do_special(); break;
     case 5: do_autoadd(); break;
+    case 6: do_setdate(); break;
 }
 
 ?>

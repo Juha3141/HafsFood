@@ -25,6 +25,7 @@ if((!isset($_SESSION['username']))) {
         <h2>관리자 페이지</h2>
 
         <form id="nav_form" action="GET">
+            <a class="txt_content" href="admin.php#setdate">설문 날짜 설정</a>
             <a class="txt_content" href="admin.php#statistics">통계</a>
             <a class="txt_content" href="admin.php#modifymenu">메뉴 설정</a>
             <a class="txt_content" href="admin.php#modifyspecial">특식 설정</a>
@@ -32,6 +33,10 @@ if((!isset($_SESSION['username']))) {
         </form>
 
         <div id="board">
+            <div id="setdate" class="element">
+                <a name="setdate" class="element"></a>
+                <?php include('./php/admin/setdate.php'); ?>    
+            </div>
             <div id="stat" class="element">
                 <a name="statistics"></a>
                 <?php include('./php/admin/stat.php'); ?>
@@ -44,7 +49,7 @@ if((!isset($_SESSION['username']))) {
                 <a name="modifyspecial"></a>
                 <?php include('./php/admin/special.php'); ?>
             </div>
-            <div id="special" class="element">
+            <div id="autoadd" class="element">
                 <a name="autoadd"></a>
                 <?php include('./php/admin/autoadd.php'); ?>
             </div>
