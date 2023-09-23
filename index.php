@@ -136,7 +136,7 @@ function get_affinity_list($from , $to) { // yeah figure that out
         <?php echo "<script>var percentage_total = ".$total_percentage."</script>"; ?>
         <script> start_progressbar("progressbar_inner" , [percentage_local , percentage_total]); </script>
         <br>
-
+        <p>요일을 눌러 다른 날짜의 메뉴를 설문할 수 있습니다!</p>
         <form method="GET" action="./index.php">
             <div id="days_count">
             <?php

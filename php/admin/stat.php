@@ -108,7 +108,11 @@ else {
         legend:{ layout:'vertical',align:'right',verticalAlign:'middle' },
         series:[{ name:'투표수',data:[<?php
     for($d=strtotime($survey_target[0]);$d!=strtotime("+1 day",strtotime($survey_target[1]));$d=strtotime("+1 day",$d)) {
-        echo get_voted_count_day(date("Y",$d),date("m",$d),date("d",$d));
+        $total = get_voted_count_day(date("Y",$d),date("m",$d),date("d",$d));
+        $mcount = get_menu_count(date("Y-m-d" , $d));
+        $ppl = 0;
+        if($mcount != 0) $ppl = round($total/$mcount);
+        echo $ppl;
         echo ",";
     }?>]}]
     });

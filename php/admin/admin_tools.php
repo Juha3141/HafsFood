@@ -96,7 +96,6 @@ function get_voted_count_day($year,$month,$date) {
         if($row == null) continue;
         $total_vote += $row['SUM(total_vote)'];
     }
-
     mysqli_close($connect);
     return $total_vote;
 }
