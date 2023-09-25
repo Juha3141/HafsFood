@@ -26,7 +26,7 @@ if((!isset($_SESSION['username']))) {
         <h2>관리자 페이지</h2>
 
         <form id="nav_form" action="GET">
-            <a class="txt_content" href="admin.php#setdate">설문 날짜 설정</a>
+            <a class="txt_content" href="admin.php#setdate">설문 설정</a>
             <a class="txt_content" href="admin.php#statistics">통계</a>
             <a class="txt_content" href="admin.php#modifymenu">메뉴 설정</a>
             <a class="txt_content" href="admin.php#modifyspecial">특식 설정</a>

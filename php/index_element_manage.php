@@ -154,4 +154,13 @@ function get_survey_target_date() {
     return $data;
 }
 
+function get_survey_deadline() {
+    $connect = connect_server();
+    $sql_req = "SELECT DATE_FORMAT(deadline,\"%Y-%m-%dT%H:%i\") AS deadline FROM survey_closing;";
+    $result = mysqli_query($connect , $sql_req);
+    $row = mysqli_fetch_assoc($result);
+    mysqli_close($connect);
+    return $row['deadline'];
+}
+
 ?>

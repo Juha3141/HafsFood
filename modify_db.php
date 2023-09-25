@@ -217,6 +217,24 @@ function do_setdate() {
     echo '<script>location.href = "admin.php";</script>';
 }
 
+function do_settime() {
+    if($_POST['survey_deadline'] != block_sql_injection($_POST['survey_deadline'])) {
+        echo "please try again.";
+        exit();
+    }
+    $connect = connect_server();
+    $deadline_time = $_POST['survey_deadline'];
+    $deadline_time = str_replace("T" , " " , $deadline_time).":00";
+    $sql_req = "UPDATE survey_closing SET deadline=\"$deadline_time\" WHERE 1=1;";
+    $result = mysqli_query($connect , $sql_req);
+    mysqli_close($connect);
+    if(!$result) {
+        die_return();
+    }
+    echo '<script>alert("수정되었습니다");</script>';
+    echo '<script>location.href = "admin.php";</script>';
+}
+
 if(!isset($_SESSION["username"])) {
     echo "no hack ~_~";
     exit();
@@ -229,6 +247,7 @@ switch($_GET['req']) {
     case 4: do_special(); break;
     case 5: do_autoadd(); break;
     case 6: do_setdate(); break;
+    case 7: do_settime(); break;
 }
 
 ?>

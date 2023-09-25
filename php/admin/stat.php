@@ -112,7 +112,7 @@ else {
         $mcount = get_menu_count(date("Y-m-d" , $d));
         $ppl = 0;
         if($mcount != 0) $ppl = round($total/$mcount);
-        echo $total;
+        echo $ppl;
         echo ",";
     }?>]}]
     });

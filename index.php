@@ -6,6 +6,16 @@ include('./php/index_element_manage.php');
 include('./php/process_submit.php');
 include('./php/user_data.php');
 
+$survey_deadline = get_survey_deadline();
+$survey_deadline = str_replace("T"," ",$survey_deadline);
+$survey_deadline_time = strtotime($survey_deadline);
+$current_time = strtotime(date("Y-m-d H:i"));
+
+if($survey_deadline_time <= $current_time) {
+    include('./closed.php');
+    exit();
+}
+
 if(!isset($_SESSION['connected'])) {
     increment_connect();
     $_SESSION['connected'] = 1;

@@ -46,4 +46,13 @@ function increment_connect() {
 	mysqli_close($connect);
 }
 
+function is_survey_closed() {
+	$connect = connect_server();
+	$sql_req = "SELECT * FROM survey_closed;";
+	$result = mysqli_query($connect , $sql_req);
+	$row = mysqli_fetch_assoc($result);
+	mysqli_close($connect);
+	return $row['closed'];
+}
+
 ?>
