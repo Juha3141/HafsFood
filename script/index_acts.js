@@ -6,6 +6,10 @@ function deadline_show(deadline) {
     let today = new Date();
     let deadline_time = new Date(deadline);
     var sec = Math.floor((deadline_time.getTime()-today.getTime())/1000);
+    if(sec <= 0) {
+        location.href = "closed.php";
+        return;
+    }
     var element = document.getElementById("deadline_show");
 
     days = Math.floor(sec/86400);

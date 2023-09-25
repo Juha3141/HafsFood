@@ -6,6 +6,8 @@ include('./php/index_element_manage.php');
 include('./php/process_submit.php');
 include('./php/user_data.php');
 
+date_default_timezone_set("Asia/Seoul");
+
 $survey_deadline = get_survey_deadline();
 $survey_deadline = str_replace("T"," ",$survey_deadline);
 $survey_deadline_time = strtotime($survey_deadline);
