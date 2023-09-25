@@ -15,6 +15,11 @@ html {
     font-size: 30px;
 }
 
+#deadline_show {
+    text-align: center;
+    font-size: 30px;
+}
+
 #special_main {
     font-size: 25px;
     padding: 20px;

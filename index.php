@@ -9,7 +9,7 @@ include('./php/user_data.php');
 $survey_deadline = get_survey_deadline();
 $survey_deadline = str_replace("T"," ",$survey_deadline);
 $survey_deadline_time = strtotime($survey_deadline);
-$current_time = strtotime(date("Y-m-d H:i"));
+$current_time = strtotime(date("Y-m-d H:i:s"));
 
 if($survey_deadline_time <= $current_time) {
     include('./closed.php');
@@ -38,7 +38,7 @@ update_removed(); // error!!!
 // Get info of the survey days
 $days = get_survey_target_date();
 if($days == null) {
-    echo "Failed getting survey date. Please ask to the administrator.";
+    echo "Failed getting survey date. Please ask to the administrator. ianisnumber@gmail.com";
     exit();
 }
 $start_day = $days[0];
@@ -80,6 +80,8 @@ function get_affinity_list($from , $to) { // yeah figure that out
                     echo date("Y. m. d." , strtotime($start_day));
                 ?>
             </div>
+            <div id="deadline_show" style="float: center;"></div>
+            <script>start_clock('<?php echo str_replace("-","/",$survey_deadline).":00"; ?>');</script>
                 <?php
                 if(isset($_SESSION['username'])) {
                     print_my_info();

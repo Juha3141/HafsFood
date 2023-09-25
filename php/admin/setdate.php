@@ -5,6 +5,7 @@
 
 $survey_target = get_survey_target_date();
 $deadline = get_survey_deadline();
+
 ?>
 
 <form method="POST" action="modify_db.php?req=6">
